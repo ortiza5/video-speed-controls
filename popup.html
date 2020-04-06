@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="popup.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <style>
+        html {
+            background: #161B1F;
+            /* background: white; */
+            width: 300px;
+            height: 260px;
+            color: white;
+            font-family: "Segoe UI";
+
+        }
+
+        body {
+            background: #161B1F;
+            margin: 0px !important;
+            padding: 5px;
+        }
+
+        .card {
+            border-radius: 5px;
+            /* border-width: 0.5px;
+            border-style: solid;
+            border-color: #333435; */
+            background-color: #28343C;
+            /* box-shadow: rgba(0, 0, 0, 0.25) 0px 10px 20px -8px; */
+            margin: 5px;
+        }
+
+        .container {
+            padding: 2px 10px;
+        }
+
+        h4 .fas {
+            margin: 0 15px 0 0;
+            color: #00B1E2;
+        }
+
+        .button {
+            border-radius: 5px;
+            border-width: 0.5px;
+            border-style: solid;
+            border-color: #3C4851;
+            background-color: #161B1F;
+            margin: 7px auto;
+            padding: 8px;
+            font-size: 12px;
+            text-align: center;
+            width: 60%;
+
+        }
+
+        .button:hover {
+            background-color: #3C4851;
+        }
+
+        .speedInput {
+            border-radius: 5px;
+            box-shadow: 0 0 0 0.7px #3C4851;
+            background-color: #161B1F;
+            margin: 7px auto;
+            /* padding: 8px; */
+            font-size: 12px;
+            text-align: center;
+            width: 67%;
+            display: flex;
+        }
+
+        .speedInput input {
+            background-color: #161B1F;
+            text-align: center;
+            color: white;
+            border-width: 0;
+            width: 50%;
+            padding: 8px;
+            z-index: 3;
+        }
+
+        .speedInput input:focus {
+            outline-color: rgb(0, 132, 168);
+        }
+
+        .speedInput button {
+            width: 25%;
+            /* height: 2rem; */
+            border: 0;
+            background-color: rgb(33, 40, 46);
+            color: white;
+        }
+
+        .speedInput button:hover {
+            background-color: #3C4851;
+        }
+
+        .speedInput button:focus {
+            outline: none;
+        }
+
+        #down {
+            border-radius: 5px 0 0 5px;
+        }
+
+        #up {
+            border-radius: 0 5px 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h3 style="margin: 5px; font-weight: 600;">Video Speed Settings</h3>
+    <h5 style="margin: 0 0 10px 5px; color: #648B9B;">www.youtube.com</h5>
+    <div class="card">
+        <div class="container">
+            <h4 style=" margin: 5px; font-weight: 600;"> <i class="fas fa-tachometer-alt"></i>Set Video Speed</h4>
+            <div class="speedInput">
+                <button type="button" id="down"><i class="fas fa-caret-left"></i></button>
+                <input id="speed" value="1" type="text" />
+                <button type="button" id="up"><i class="fas fa-caret-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="container">
+            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-redo"></i></i>Reset</h4>
+            <div class="button" id="reset">Reset speed for this site</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="container">
+            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-save"></i>Save Default</h4>
+            <div class="button" id="save">Save speed for this site</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="container">
+            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-times-circle"></i>Disable</h4>
+            <div class="button" id="disable">Disable extension for this site</div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

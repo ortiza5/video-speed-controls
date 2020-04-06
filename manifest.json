@@ -1,0 +1,45 @@
+{
+  "name": "YouTube 2x Speed",
+  "description": "Why not speed up the world",
+  "version": "1.2",
+  "manifest_version": 2,
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "notifications",
+    "declarativeContent"
+  ],
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/content.js",
+        "old/jquery-3.4.1.slim.min.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "page_action": {
+    "default_icon": {
+      "19": "img/icon-19.png",
+      "38": "img/icon-38.png"
+    },
+    "default_title": "Change video speed",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "img/icon-128.png",
+    "48": "img/icon-48.png",
+    "16": "img/icon-16.png"
+  }
+}
