@@ -3,28 +3,15 @@
   "description": "Why not speed up the world",
   "version": "1.2",
   "manifest_version": 2,
-  "permissions": [
-    "<all_urls>",
-    "activeTab",
-    "notifications",
-    "declarativeContent"
-  ],
+  "permissions": ["<all_urls>", "activeTab", "notifications", "declarativeContent", "storage"],
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "js/content.js",
-        "old/jquery-3.4.1.slim.min.js"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/content.js", "old/jquery-3.4.1.slim.min.js"],
       "run_at": "document_end",
       "all_frames": true
     }
