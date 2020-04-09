@@ -51,7 +51,7 @@ function getVideoType() {
 // if a video exists, set it to the speed and give a notification
 function setSpeed(newSpeed, video) {
   video.playbackRate = newSpeed;
-  tempAlert("Speed: " + newSpeed, 2000);
+  tempAlert("Speed: " + newSpeed, 2000, video);
   setIcon(newSpeed);
   //   controlsIcon(newSpeed);
 }
@@ -135,6 +135,22 @@ function playPause(video) {
   }
 }
 
+//
+function skipForward(video) {
+  // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
+  if (playerType !== "youtube") {
+    video.currentTime += 5;
+  }
+}
+
+//
+function skipBackward(video) {
+  // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
+  if (playerType !== "youtube") {
+    video.currentTime -= 5;
+  }
+}
+
 // function toggleFullScreen() {
 //     var video = getVideos();
 //     if (video != null) {
@@ -172,9 +188,9 @@ window.onkeydown = function (e) {
       } else if ("k" in keysDown) {
         playPause(video);
       } else if ("ArrowLeft" in keysDown) {
-        console.log("back");
+        skipBackward(video);
       } else if ("ArrowRight" in keysDown) {
-        console.log("forward");
+        skipForward(video);
       }
     });
   }
@@ -186,7 +202,7 @@ window.onkeyup = function (e) {
 };
 
 // Notification to show alert
-function tempAlert(msg, duration) {
+function tempAlert(msg, duration, insertAfter) {
   // remove any old notification first
   var element = document.getElementById("speed-notification123");
   if (element !== null && element.parentNode) {
@@ -195,18 +211,19 @@ function tempAlert(msg, duration) {
   var el = document.createElement("div");
   el.setAttribute(
     "style",
-    "background:#d90e00;position:absolute;top:0px;right:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 999;"
+    "background:#d90e00;position:absolute;top:0px;left:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 9999;"
   );
   el.setAttribute("id", "speed-notification123");
   el.innerHTML = msg;
-  if (playerType === "youtube") {
-    var toAddTo = document.getElementsByClassName("html5-video-player")[0];
-  } else if (playerType === "jwplayer") {
-    var toAddTo = document.getElementsByClassName("jwplayer")[0];
-  } else {
-    var toAddTo = document.body;
-  }
-  toAddTo.appendChild(el);
+  //   if (playerType === "youtube") {
+  //     var toAddTo = document.getElementsByClassName("html5-video-player")[0];
+  //   } else if (playerType === "jwplayer") {
+  //     var toAddTo = document.getElementsByClassName("jwplayer")[0];
+  //   } else {
+  //     var toAddTo = document.body;
+  //   }
+  //   toAddTo.appendChild(el);
+  insertAfter.insertAdjacentElement("afterend", el);
   setTimeout(function () {
     el.style.opacity = 0;
   }, duration / 2);
