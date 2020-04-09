@@ -126,13 +126,13 @@ function setIcon(speed) {
 // Toggles play pause of video
 function playPause(video) {
   // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  //   if (playerType !== "youtube") {
-  if (video.paused) {
-    video.play();
-  } else {
-    video.pause();
+  if (playerType !== "youtube") {
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
   }
-  //   }
 }
 
 // function toggleFullScreen() {
