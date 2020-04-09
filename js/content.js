@@ -5,10 +5,8 @@ var enabled = true;
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
-  var returnVal = getVideos();
-  var video = returnVal[0],
-    type = returnVal[1];
-  if (video != null) {
+  var videos = getVideos();
+  if (videos) {
     chrome.runtime.sendMessage({
       from: "content",
       subject: "showPageAction",
@@ -26,18 +24,10 @@ var enabled = true;
 // gets the video from either the video or iframe route
 // RETURNS: Video element -or- null if their isn't a video
 function getVideos() {
-  if (self === top) {
-    var videos = document.getElementsByTagName("video");
-    if (videos.length >= 1) {
-      getVideoType();
-      return [videos, "main"];
-    }
-  } else {
-    var videos = document.getElementsByTagName("video");
-    if (videos.length >= 1) {
-      getVideoType();
-      return [videos, "iframe"];
-    }
+  var videos = document.getElementsByTagName("video");
+  if (videos.length >= 1) {
+    getVideoType();
+    return Array.from(videos);
   }
 
   return; // if a video doesn't exist
@@ -59,72 +49,35 @@ function getVideoType() {
 }
 
 // if a video exists, set it to the speed and give a notification
-function setSpeed(newSpeed, video, type) {
-  if (self === top) {
-    if (type === "main") {
-      video.playbackRate = newSpeed;
-      tempAlert("Speed: " + newSpeed, 2000, "main");
-      setIcon(newSpeed);
-      //   controlsIcon(newSpeed);
-    }
-  } else {
-    if (type === "iframe") {
-      video.playbackRate = newSpeed;
-      tempAlert("Speed: " + newSpeed, 2000, "iframe");
-      setIcon(newSpeed);
-      //   controlsIcon(newSpeed);
-    }
-  }
+function setSpeed(newSpeed, video) {
+  video.playbackRate = newSpeed;
+  tempAlert("Speed: " + newSpeed, 2000);
+  setIcon(newSpeed);
+  //   controlsIcon(newSpeed);
 }
 
 // if a video exists, increment the speed by 0.25
 // upper limit of video speed is 16 (why did they bother going so high?)
-function incSpeed(video, type) {
-  if (type === "main") {
-    var currSpeed = video.playbackRate;
-    if (currSpeed <= 15.75) {
-      var newSpeed = currSpeed + 0.25;
-    } else {
-      var newSpeed = 16;
-    }
-    setSpeed(newSpeed, video, type);
+function incSpeed(video) {
+  var currSpeed = video.playbackRate;
+  if (currSpeed <= 15.75) {
+    var newSpeed = currSpeed + 0.25;
+  } else {
+    var newSpeed = 16;
   }
-  if (parent === top) {
-    if (type === "iframe") {
-      var currSpeed = video.playbackRate;
-      if (currSpeed <= 15.75) {
-        var newSpeed = currSpeed + 0.25;
-      } else {
-        var newSpeed = 16;
-      }
-      setSpeed(newSpeed, video, type);
-    }
-  }
+  setSpeed(newSpeed, video);
 }
 
 // if a video exists, decrement the speed by 0.25
 // lower limit of video speed is 0
-function decSpeed(video, type) {
-  if (type === "main") {
-    var currSpeed = video.playbackRate;
-    if (currSpeed >= 0.25) {
-      var newSpeed = currSpeed - 0.25;
-    } else {
-      var newSpeed = 0;
-    }
-    setSpeed(newSpeed, video, type);
+function decSpeed(video) {
+  var currSpeed = video.playbackRate;
+  if (currSpeed >= 0.25) {
+    var newSpeed = currSpeed - 0.25;
+  } else {
+    var newSpeed = 0;
   }
-  if (parent === top) {
-    if (type === "iframe") {
-      var currSpeed = video.playbackRate;
-      if (currSpeed >= 0.25) {
-        var newSpeed = currSpeed - 0.25;
-      } else {
-        var newSpeed = 0;
-      }
-      setSpeed(newSpeed, video, type);
-    }
-  }
+  setSpeed(newSpeed, video);
 }
 
 // loads the correct icon for the speed
@@ -171,26 +124,15 @@ function setIcon(speed) {
 // }
 
 // Toggles play pause of video
-function playPause(video, type) {
+function playPause(video) {
   // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (playerType !== "youtube") {
-    if (type === "main") {
-      if (video.paused) {
-        video.play();
-      } else {
-        video.pause();
-      }
-    }
-    if (parent === top) {
-      if (type === "iframe") {
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
-      }
-    }
+  //   if (playerType !== "youtube") {
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
   }
+  //   }
 }
 
 // function toggleFullScreen() {
@@ -208,24 +150,33 @@ function playPause(video, type) {
 // Hotkeys for different actions
 let keysDown = {};
 window.onkeydown = function (e) {
+  if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   keysDown[e.key] = true;
   let target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
     return;
   }
 
-  let videosReturn = getVideos();
-
-  if ("F21" in keysDown) {
-    decSpeed();
-  } else if ("F22" in keysDown) {
-    setSpeed(1);
-  } else if ("F23" in keysDown) {
-    incSpeed();
-  } else if ("k" in keysDown) {
-    playPause();
-  } else if ("ArrowLeft" in keysDown) {
-  } else if ("ArrowRight" in keysDown) {
+  let videos = getVideos();
+  if (videos) {
+    videos.forEach((video) => {
+      if ("F21" in keysDown) {
+        decSpeed(video);
+      } else if ("F22" in keysDown) {
+        setSpeed(1, video);
+      } else if ("F23" in keysDown) {
+        incSpeed(video);
+      } else if ("k" in keysDown) {
+        playPause(video);
+      } else if ("ArrowLeft" in keysDown) {
+        console.log("back");
+      } else if ("ArrowRight" in keysDown) {
+        console.log("forward");
+      }
+    });
   }
 };
 
@@ -235,68 +186,33 @@ window.onkeyup = function (e) {
 };
 
 // Notification to show alert
-function tempAlert(msg, duration, type) {
-  if (self === top) {
-    if (type === "main") {
-      // remove any old notification first
-      var element = document.getElementById("speed-notification123");
-      if (element !== null && element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
-      var el = document.createElement("div");
-      el.setAttribute(
-        "style",
-        "background:#d90e00;position:absolute;top:0px;right:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 999;"
-      );
-      el.setAttribute("id", "speed-notification123");
-      el.innerHTML = msg;
-      if (playerType === "youtube") {
-        var toAddTo = document.getElementsByClassName("html5-video-player")[0];
-      } else if (playerType === "jwplayer") {
-        var toAddTo = document.getElementsByClassName("jwplayer")[0];
-      } else {
-        var toAddTo = document.body;
-      }
-      toAddTo.appendChild(el);
-      setTimeout(function () {
-        el.style.opacity = 0;
-      }, duration / 2);
-      setTimeout(function () {
-        if (el !== null && el.parentNode) {
-          el.parentNode.removeChild(el);
-        }
-      }, duration);
-    }
-  } else {
-    if (type === "iframe") {
-      // remove any old notification first
-      var element = document.getElementById("speed-notification123");
-      if (element !== null && element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
-      var el = document.createElement("div");
-      el.setAttribute(
-        "style",
-        "background:#d90e00;position:absolute;top:0px;right:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 999;"
-      );
-      el.setAttribute("id", "speed-notification123");
-      el.innerHTML = msg;
-      if (playerType === "youtube") {
-        var toAddTo = document.getElementsByClassName("html5-video-player")[0];
-      } else if (playerType === "jwplayer") {
-        var toAddTo = document.getElementsByClassName("jwplayer")[0];
-      } else {
-        var toAddTo = document.body;
-      }
-      toAddTo.appendChild(el);
-      setTimeout(function () {
-        el.style.opacity = 0;
-      }, duration / 2);
-      setTimeout(function () {
-        if (el !== null && el.parentNode) {
-          el.parentNode.removeChild(el);
-        }
-      }, duration);
-    }
+function tempAlert(msg, duration) {
+  // remove any old notification first
+  var element = document.getElementById("speed-notification123");
+  if (element !== null && element.parentNode) {
+    element.parentNode.removeChild(element);
   }
+  var el = document.createElement("div");
+  el.setAttribute(
+    "style",
+    "background:#d90e00;position:absolute;top:0px;right:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 999;"
+  );
+  el.setAttribute("id", "speed-notification123");
+  el.innerHTML = msg;
+  if (playerType === "youtube") {
+    var toAddTo = document.getElementsByClassName("html5-video-player")[0];
+  } else if (playerType === "jwplayer") {
+    var toAddTo = document.getElementsByClassName("jwplayer")[0];
+  } else {
+    var toAddTo = document.body;
+  }
+  toAddTo.appendChild(el);
+  setTimeout(function () {
+    el.style.opacity = 0;
+  }, duration / 2);
+  setTimeout(function () {
+    if (el !== null && el.parentNode) {
+      el.parentNode.removeChild(el);
+    }
+  }, duration);
 }
