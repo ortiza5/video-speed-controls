@@ -166,10 +166,10 @@ function skipBackward(video) {
 // Hotkeys for different actions
 let keysDown = {};
 window.onkeydown = function (e) {
-  if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  // if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  // }
   keysDown[e.key] = true;
   let target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
