@@ -3,7 +3,8 @@
 
 <head>
     <script type="text/javascript" src="popup.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
+    <link rel="stylesheet" href="fa.css">
     <style>
         html {
             background: #161B1F;
@@ -36,8 +37,9 @@
         }
 
         h4 .fas {
-            margin: 0 15px 0 0;
+            margin: 0 20px 0 0;
             color: #00B1E2;
+            font-size: 14px;
         }
 
         .button {
@@ -52,6 +54,11 @@
             text-align: center;
             width: 60%;
 
+        }
+
+        .button.save {
+            background-color: #00B1E2;
+            font-weight: 500;
         }
 
         .button:hover {
@@ -100,45 +107,116 @@
             outline: none;
         }
 
-        #down {
+        #down,
+        #down-l {
             border-radius: 5px 0 0 5px;
         }
 
-        #up {
+        #up,
+        #up-l {
             border-radius: 0 5px 5px 0;
+        }
+
+        .icon-button {
+            border-radius: 5px;
+            border-width: 0.5px;
+            border-style: solid;
+            border-color: #3C4851;
+            background-color: #161616;
+            margin: 7px auto;
+            padding: 8px;
+            font-size: 12px;
+
+            width: 6.3%;
+            display: inline-block;
+        }
+
+
+        .hotkeys {
+            text-align: center;
+        }
+
+        .hotkeys input[type="checkbox"] {
+            position: absolute;
+            clip: rect(0, 0, 0, 0);
+            pointer-events: none;
+        }
+
+        .hotkeys input[type="checkbox"]:not(:checked)+label:hover {
+            background-color: #3C4851;
+        }
+
+        .hotkeys input[type="checkbox"]+label:active,
+        .hotkeys input[type="checkbox"]:checked+label {
+            background-color: #00B1E2;
+        }
+
+        h3,
+        h4 {
+            margin: 5px;
+            font-weight: 600;
+        }
+
+        h5 {
+            margin: 0 0 10px 5px;
+            color: #648B9B;
         }
     </style>
 </head>
 
 <body>
-    <h3 style="margin: 5px; font-weight: 600;">Video Speed Settings</h3>
-    <h5 style="margin: 0 0 10px 5px; color: #648B9B;">www.youtube.com</h5>
+    <h3>Video Speed Settings</h3>
+    <h5 id="website-domain">www.youtube.com</h5>
     <div class="card">
         <div class="container">
-            <h4 style=" margin: 5px; font-weight: 600;"> <i class="fas fa-tachometer-alt"></i>Set Video Speed</h4>
+            <h4><i class="fas fa-tachometer-alt"></i>Set Video Speed</h4>
             <div class="speedInput">
                 <button type="button" id="down"><i class="fas fa-caret-left"></i></button>
-                <input id="speed" value="1" type="text" />
+                <input id="video-speed" value="1" type="text" />
                 <button type="button" id="up"><i class="fas fa-caret-right"></i></button>
             </div>
         </div>
     </div>
     <div class="card">
         <div class="container">
-            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-redo"></i></i>Reset</h4>
-            <div class="button" id="reset">Reset speed for this site</div>
+            <h4><i class="fas fa-layers"></i>Notification/Fullscreen Layer</h4>
+            <div class="speedInput">
+                <button type="button" id="down-l"><i class="fas fa-caret-left"></i></button>
+                <input id="notification-layer" value="1" type="text" />
+                <button type="button" id="up-l"><i class="fas fa-caret-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="container">
+            <h4><i class="fas fa-times-circle"></i>Disable HotKeys
+            </h4>
+            <div class="hotkeys">
+                <input type="checkbox" id="slower"></input>
+                <label for="slower" class="icon-button" title="Decrease Speed"><i class="fas fa-slower"></i></label>
+                <input type="checkbox" id="normal"></input>
+                <label for="normal" class="icon-button" title="Normal Speed"><i class="fas fa-normal"></i></label>
+                <input type="checkbox" id="faster"></input>
+                <label for="faster" class="icon-button" title="Increase Speed"><i class="fas fa-faster"></i></label>
+                <input type="checkbox" id="fullscreen"></input>
+                <label for="fullscreen" class="icon-button" title="Go Fullscreen"><i
+                        class="fas fa-fullscreen"></i></label>
+                <input type="checkbox" id="pause"></input>
+                <label for="pause" class="icon-button" title="Play/Pause"><i class="fas fa-pause"></i></label>
+                <input type="checkbox" id="skip-back"></input>
+                <label for="skip-back" class="icon-button" title="Skip Back in Video"><i
+                        class="fas fa-skip-b"></i></label>
+                <input type="checkbox" id="skip-forward"></input>
+                <label for="skip-forward" class="icon-button" title="Skip Forward in Video"><i
+                        class="fas fa-skip-f"></i></label>
+            </div>
         </div>
     </div>
     <div class="card">
         <div class="container">
-            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-save"></i>Save Default</h4>
-            <div class="button" id="save">Save speed for this site</div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="container">
-            <h4 style="margin: 5px; font-weight: 600;"><i class="fas fa-times-circle"></i>Disable</h4>
-            <div class="button" id="disable">Disable extension for this site</div>
+            <h4><i class="fas fa-save"></i>Save Settings</h4>
+            <div class="button save" id="save">Save for this site</div>
         </div>
     </div>
 
