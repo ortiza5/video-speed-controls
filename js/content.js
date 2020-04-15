@@ -1,30 +1,71 @@
 // globals
-var buttonAdded = false;
-var playerType = null;
-var enabled = true;
+var PLAYER_TYPE = null;
+var SCRIPT_ENABLED = false;
+var DOMAIN = null;
+var SPEED = 1;
+// hotkeys
+var SLOWER_ENABLED = true;
+var NORMAL_ENABLED = true;
+var FASTER_ENABLED = true;
+var FULLSCREEN_ENABLED = true;
+var PLAYPAUSE_ENABLED = true;
+var SKIP_BACK_ENABLED = true;
+var SKIP_FORWARD_ENABLED = true;
+// increments
+var SPEED_INC = 0.25;
+var SKIP_INC = 5;
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
-  var videos = getVideos();
+  let videos = getVideos();
   if (videos) {
     chrome.runtime.sendMessage({
       from: "content",
       subject: "showPageAction",
     });
+    SCRIPT_ENABLED = true;
   } else {
-    enabled = false;
+    SCRIPT_ENABLED = false;
   }
 });
 
-// chrome.runtime.onMessage.addListener(function () {
-
-//     return Promise.resolve("Dummy response to keep the console quiet");
-// });
+// listen for requests from the popup
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.from === "popup" && SCRIPT_ENABLED) {
+    if (request.subject === "needInfo") {
+      DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
+      sendResponse({ speed: SPEED, domain: DOMAIN });
+    } else if (request.subject === "changeSpeed") {
+      let videos = getVideos();
+      if (videos) {
+        if (request.direction === "up") {
+          videos.forEach((video) => {
+            incSpeed(video);
+          });
+        } else if (request.direction === "down") {
+          videos.forEach((video) => {
+            decSpeed(video);
+          });
+        }
+        sendResponse({ speed: SPEED });
+      }
+    } else if (request.subject === "typedSpeed") {
+      let newSpeed = isNaN(request.newSpeed) ? 1 : request.newSpeed;
+      let videos = getVideos();
+      if (videos) {
+        videos.forEach((video) => {
+          setSpeed(newSpeed, video);
+        });
+      }
+      sendResponse({ speed: SPEED });
+    }
+  }
+});
 
 // gets the video from either the video or iframe route
 // RETURNS: Video element -or- null if their isn't a video
 function getVideos() {
-  var videos = document.getElementsByTagName("video");
+  let videos = document.getElementsByTagName("video");
   if (videos.length >= 1) {
     getVideoType();
     return Array.from(videos);
@@ -35,47 +76,47 @@ function getVideos() {
 
 // set the global type of player
 function getVideoType() {
-  var type = document.getElementsByClassName("jw-controlbar");
-  if (type.length >= 1) {
-    playerType = "jwplayer";
-    return;
-  }
   // youtube
   type = document.getElementsByClassName("ytp-chrome-controls");
   if (type.length >= 1) {
-    playerType = "youtube";
-    return;
+    PLAYER_TYPE = "youtube";
   }
 }
 
 // if a video exists, set it to the speed and give a notification
 function setSpeed(newSpeed, video) {
+  newSpeed = newSpeed > 16 ? 16 : newSpeed < 0 ? 0 : newSpeed;
+  SPEED = newSpeed;
   video.playbackRate = newSpeed;
   tempAlert("Speed: " + newSpeed, 2000, video);
   setIcon(newSpeed);
-  //   controlsIcon(newSpeed);
+  // if (callback instanceof Function) {
+  //   callback();
+  // }
 }
 
-// if a video exists, increment the speed by 0.25
+// if a video exists, increment the speed by the speed increment
 // upper limit of video speed is 16 (why did they bother going so high?)
-function incSpeed(video) {
-  var currSpeed = video.playbackRate;
-  if (currSpeed <= 15.75) {
-    var newSpeed = currSpeed + 0.25;
+function incSpeed(video, callback) {
+  let currSpeed = video.playbackRate;
+  let newSpeed;
+  if (currSpeed <= 16 - SPEED_INC) {
+    newSpeed = currSpeed + SPEED_INC;
   } else {
-    var newSpeed = 16;
+    newSpeed = 16;
   }
   setSpeed(newSpeed, video);
 }
 
-// if a video exists, decrement the speed by 0.25
+// if a video exists, decrement the speed by the speed increment
 // lower limit of video speed is 0
-function decSpeed(video) {
-  var currSpeed = video.playbackRate;
-  if (currSpeed >= 0.25) {
-    var newSpeed = currSpeed - 0.25;
+function decSpeed(video, callback) {
+  let currSpeed = video.playbackRate;
+  let newSpeed;
+  if (currSpeed >= SPEED_INC) {
+    newSpeed = currSpeed - SPEED_INC;
   } else {
-    var newSpeed = 0;
+    newSpeed = 0;
   }
   setSpeed(newSpeed, video);
 }
@@ -97,36 +138,10 @@ function setIcon(speed) {
   }
 }
 
-// function controlsIcon(speed) {
-//   // youtube
-//   if (playerType === "youtube") {
-//     var controls = document.getElementsByClassName("ytp-right-controls");
-//     if (controls !== null && buttonAdded === false) {
-//       var buttonHTML = `
-//         <button class="ytp-playbackspeed-button ytp-button" data-tooltip-target-id="ytp-playbackspeed-button"
-//             aria-label="Playback Speed" title="Playback Speed">
-//             <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
-//                 <use class="ytp-svg-shadow" xlink:href="#ytp-id-21"></use>
-//                 <path
-//                     d="M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M29,25 L29,10.98 C29,9.88 28.1,9 27,9 L9,9 C7.9,9 7,9.88 7,10.98 L7,25 C7,26.1 7.9,27 9,27 L27,27 C28.1,27 29,26.1 29,25 L29,25 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z"
-//                     fill="#fff" id="ytp-id-21"></path>
-//             </svg>
-//         </button>`;
-//       controls[0].insertAdjacentHTML("afterbegin", buttonHTML);
-//       buttonAdded = true;
-//       return;
-//     }
-//   }
-
-//   // jwplayer
-//   if (playerType === "jwplayer") {
-//   }
-// }
-
 // Toggles play pause of video
 function playPause(video) {
   // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (playerType !== "youtube") {
+  if (PLAYER_TYPE !== "youtube") {
     if (video.paused) {
       video.play();
     } else {
@@ -138,16 +153,16 @@ function playPause(video) {
 //
 function skipForward(video) {
   // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (playerType !== "youtube") {
-    video.currentTime += 5;
+  if (PLAYER_TYPE !== "youtube") {
+    video.currentTime += SKIP_INC;
   }
 }
 
 //
 function skipBackward(video) {
   // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (playerType !== "youtube") {
-    video.currentTime -= 5;
+  if (PLAYER_TYPE !== "youtube") {
+    video.currentTime -= SKIP_INC;
   }
 }
 
@@ -204,25 +219,17 @@ window.onkeyup = function (e) {
 // Notification to show alert
 function tempAlert(msg, duration, insertAfter) {
   // remove any old notification first
-  var element = document.getElementById("speed-notification123");
+  let element = document.getElementById("speed-notification123");
   if (element !== null && element.parentNode) {
     element.parentNode.removeChild(element);
   }
-  var el = document.createElement("div");
+  let el = document.createElement("div");
   el.setAttribute(
     "style",
     "background:#d90e00;position:absolute;top:0px;left:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 9999;"
   );
   el.setAttribute("id", "speed-notification123");
   el.innerHTML = msg;
-  //   if (playerType === "youtube") {
-  //     var toAddTo = document.getElementsByClassName("html5-video-player")[0];
-  //   } else if (playerType === "jwplayer") {
-  //     var toAddTo = document.getElementsByClassName("jwplayer")[0];
-  //   } else {
-  //     var toAddTo = document.body;
-  //   }
-  //   toAddTo.appendChild(el);
   insertAfter.insertAdjacentElement("afterend", el);
   setTimeout(function () {
     el.style.opacity = 0;
@@ -232,4 +239,16 @@ function tempAlert(msg, duration, insertAfter) {
       el.parentNode.removeChild(el);
     }
   }, duration);
+}
+
+// checking array equality
+function arrayMatch(arr1, arr2) {
+  // Check if the arrays are the same length
+  if (arr1.length !== arr2.length) return false;
+  // Check if all items exist and are in the same order
+  for (var i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false;
+  }
+  // Otherwise, return true
+  return true;
 }

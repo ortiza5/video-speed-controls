@@ -3,74 +3,57 @@
 
 // Update the relevant fields with the new data.
 function updateValues(info) {
-  document.getElementById("video-speed").textContent = info.speed;
-  document.getElementById("website-domain").value = info.domain;
-  // document.getElementById('buttons').textContent = info.buttons;
+  document.getElementById("video-speed").value = info.speed;
+  document.getElementById("website-domain").innerHTML = info.domain;
 }
 
-function updateSpinner(change) {
-  var speedObj = document.getElementById("video-speed");
-  var value = parseFloat(speedObj.value);
-  if (change == "down") {
-    if (value >= 0.25) {
-      value = value - 0.25;
-    } else {
-      value = 0;
-    }
-  } else {
-    if (value <= 15.75) {
-      value = value + 0.25;
-    } else {
-      value = 16;
-    }
-  }
-  speedObj.value = value;
+function updateSpinner(change, tabID) {
+  let speedObj = document.getElementById("video-speed");
+  chrome.tabs.sendMessage(tabID, { from: "popup", subject: "changeSpeed", direction: change }, function (response) {
+    speedObj.value = response.speed;
+  });
 }
 
 // Once the DOM is ready...
-window.addEventListener("DOMContentLoaded", () => {
-  // ...query for the active tab...
+window.addEventListener("DOMContentLoaded", function () {
+  // get the active tab
   let params = {
     active: true,
     currentWindow: true,
   };
   chrome.tabs.query(params, function (tabs) {
-    // ...and send a request for the DOM info...
-    chrome.tabs.sendMessage(tabs[0].id, { from: "popup", subject: "Info" }, updateValues);
+    let tabID = tabs[0].id;
+    // send a request for the DOM info
+    chrome.tabs.sendMessage(tabID, { from: "popup", subject: "needInfo" }, updateValues);
 
-    // Button to Disable the Controls for a Website
-    var disableButton = document.getElementById("disable");
-    disableButton.addEventListener("click", function () {
-      chrome.tabs.sendMessage(tabs[0].id, { from: "popup", subject: "disable" });
+    // Video Speed Down Button
+    let downButton = document.getElementById("down");
+    downButton.addEventListener("click", function () {
+      updateSpinner("down", tabID);
     });
-  });
 
-  // Video Speed Down Button
-  var downButton = document.getElementById("down");
-  downButton.addEventListener("click", function () {
-    updateSpinner("down");
-  });
+    // Video Speed Up Button
+    let upButton = document.getElementById("up");
+    upButton.addEventListener("click", function () {
+      updateSpinner("up", tabID);
+    });
 
-  // Video Speed Up Button
-  var upButton = document.getElementById("up");
-  upButton.addEventListener("click", function () {
-    updateSpinner("up");
-  });
-
-  // Button to Reset Video Speed
-  var resetButton = document.getElementById("reset");
-  resetButton.addEventListener("click", function () {
-    var speedObj = document.getElementById("speed");
-    // TODO: Add pulling value from saved storage
-    speedObj.value = 1;
-  });
-
-  // Button to Save Video Speed for a Website
-  var saveButton = document.getElementById("save");
-  saveButton.addEventListener("click", function () {
-    var speedObj = document.getElementById("video-speed");
-    var value = parseFloat(speedObj.value);
-    var domainObj = document.getElementById("website-domain").innerHTML;
-    // TODO: Save to localStorage
+    let speedInput = document.getElementById("video-speed");
+    speedInput.onchange = function (event) {
+      chrome.tabs.sendMessage(
+        tabID,
+        { from: "popup", subject: "typedSpeed", newSpeed: parseFloat(this.value) },
+        function (response) {
+          speedInput.value = response.speed;
+        }
+      );
+    };
   });
 });
+
+// chrome.runtime.onMessage.addListener(function (msg) {
+//   if (msg.from === "content" && msg.subject === "popupUpdate") {
+//     updateValues(msg.info);
+//   }
+//   return Promise.resolve("Dummy response to keep the console quiet");
+// });
