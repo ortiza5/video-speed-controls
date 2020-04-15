@@ -3,6 +3,8 @@ var PLAYER_TYPE = null;
 var SCRIPT_ENABLED = false;
 var DOMAIN = null;
 var SPEED = 1;
+var NOTIFICATION_LAYER = 0;
+var IS_NOTIFICATION_LAYER_MAXED = false;
 // hotkeys
 var SLOWER_ENABLED = true;
 var NORMAL_ENABLED = true;
@@ -34,7 +36,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.from === "popup" && SCRIPT_ENABLED) {
     if (request.subject === "needInfo") {
       DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
-      sendResponse({ speed: SPEED, domain: DOMAIN });
+      sendResponse({ speed: SPEED, domain: DOMAIN, layer: NOTIFICATION_LAYER });
     } else if (request.subject === "changeSpeed") {
       let videos = getVideos();
       if (videos) {
@@ -54,11 +56,42 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       let videos = getVideos();
       if (videos) {
         videos.forEach((video) => {
-          console.log(newSpeed);
           setSpeed(newSpeed, video);
         });
       }
       sendResponse({ speed: SPEED });
+    } else if (request.subject === "changeLayer") {
+      if (request.direction === "up" && !IS_NOTIFICATION_LAYER_MAXED) {
+        NOTIFICATION_LAYER++;
+      } else if (request.direction === "down") {
+        if (NOTIFICATION_LAYER >= 1) {
+          NOTIFICATION_LAYER--;
+        } else {
+          NOTIFICATION_LAYER = 0;
+        }
+        IS_NOTIFICATION_LAYER_MAXED = false;
+      }
+      // show where the new layer will be
+      let videos = getVideos();
+      if (videos) {
+        videos.forEach((video) => {
+          tempAlert("This is the New Layer", 2000, video);
+        });
+      }
+      sendResponse({ layer: NOTIFICATION_LAYER });
+    } else if (request.subject === "typedLayer") {
+      let newLayer = isNaN(parseInt(request.newLayer)) ? NOTIFICATION_LAYER : request.newLayer;
+      if (newLayer >= 0) {
+        NOTIFICATION_LAYER = newLayer;
+      }
+      // show where the new layer will be
+      let videos = getVideos();
+      if (videos) {
+        videos.forEach((video) => {
+          tempAlert("This is the New Layer", 2000, video);
+        });
+      }
+      sendResponse({ layer: NOTIFICATION_LAYER });
     }
   }
 });
@@ -98,7 +131,7 @@ function setSpeed(newSpeed, video) {
 
 // if a video exists, increment the speed by the speed increment
 // upper limit of video speed is 16 (why did they bother going so high?)
-function incSpeed(video, callback) {
+function incSpeed(video) {
   let currSpeed = video.playbackRate;
   let newSpeed;
   if (currSpeed <= 16 - SPEED_INC) {
@@ -111,7 +144,7 @@ function incSpeed(video, callback) {
 
 // if a video exists, decrement the speed by the speed increment
 // lower limit of video speed is 0
-function decSpeed(video, callback) {
+function decSpeed(video) {
   let currSpeed = video.playbackRate;
   let newSpeed;
   if (currSpeed >= SPEED_INC) {
@@ -224,6 +257,7 @@ function tempAlert(msg, duration, insertAfter) {
   if (element !== null && element.parentNode) {
     element.parentNode.removeChild(element);
   }
+  // make the notification
   let el = document.createElement("div");
   el.setAttribute(
     "style",
@@ -231,7 +265,23 @@ function tempAlert(msg, duration, insertAfter) {
   );
   el.setAttribute("id", "speed-notification123");
   el.innerHTML = msg;
+  // go up the specified number of parents
+  let count = 0;
+  while (count < NOTIFICATION_LAYER) {
+    if (insertAfter.parentNode.parentNode.parentNode) {
+      insertAfter = insertAfter.parentNode;
+      count++;
+    } else {
+      NOTIFICATION_LAYER = count;
+      IS_NOTIFICATION_LAYER_MAXED = true;
+      // break out
+      count = NOTIFICATION_LAYER;
+    }
+  }
+  // insert the notification
   insertAfter.insertAdjacentElement("afterend", el);
+
+  // fade out the notification
   setTimeout(function () {
     el.style.opacity = 0;
   }, duration / 2);

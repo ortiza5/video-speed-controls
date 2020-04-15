@@ -5,12 +5,20 @@
 function updateValues(info) {
   document.getElementById("video-speed").value = info.speed;
   document.getElementById("website-domain").innerHTML = info.domain;
+  document.getElementById("notification-layer").value = info.layer;
 }
 
-function updateSpinner(change, tabID) {
+function updateSpeedSpinner(change, tabID) {
   let speedObj = document.getElementById("video-speed");
   chrome.tabs.sendMessage(tabID, { from: "popup", subject: "changeSpeed", direction: change }, function (response) {
     speedObj.value = response.speed;
+  });
+}
+
+function updateLayerSpinner(change, tabID) {
+  let layer = document.getElementById("notification-layer");
+  chrome.tabs.sendMessage(tabID, { from: "popup", subject: "changeLayer", direction: change }, function (response) {
+    layer.value = response.layer;
   });
 }
 
@@ -29,15 +37,28 @@ window.addEventListener("DOMContentLoaded", function () {
     // Video Speed Down Button
     let downButton = document.getElementById("down");
     downButton.addEventListener("click", function () {
-      updateSpinner("down", tabID);
+      updateSpeedSpinner("down", tabID);
     });
 
     // Video Speed Up Button
     let upButton = document.getElementById("up");
     upButton.addEventListener("click", function () {
-      updateSpinner("up", tabID);
+      updateSpeedSpinner("up", tabID);
     });
 
+    // Notification Layer Down Button
+    let layerDownButton = document.getElementById("down-l");
+    layerDownButton.addEventListener("click", function () {
+      updateLayerSpinner("down", tabID);
+    });
+
+    // Notification Layer Up Button
+    let layerUpButton = document.getElementById("up-l");
+    layerUpButton.addEventListener("click", function () {
+      updateLayerSpinner("up", tabID);
+    });
+
+    // Listner for typed in video speed
     let speedInput = document.getElementById("video-speed");
     speedInput.onchange = function (event) {
       chrome.tabs.sendMessage(
@@ -48,12 +69,17 @@ window.addEventListener("DOMContentLoaded", function () {
         }
       );
     };
+
+    // Listner for typed in notification layer
+    let layerInput = document.getElementById("notification-layer");
+    layerInput.onchange = function (event) {
+      chrome.tabs.sendMessage(
+        tabID,
+        { from: "popup", subject: "typedLayer", newLayer: parseFloat(this.value) },
+        function (response) {
+          layerInput.value = response.layer;
+        }
+      );
+    };
   });
 });
-
-// chrome.runtime.onMessage.addListener(function (msg) {
-//   if (msg.from === "content" && msg.subject === "popupUpdate") {
-//     updateValues(msg.info);
-//   }
-//   return Promise.resolve("Dummy response to keep the console quiet");
-// });
