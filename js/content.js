@@ -50,10 +50,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({ speed: SPEED });
       }
     } else if (request.subject === "typedSpeed") {
-      let newSpeed = isNaN(request.newSpeed) ? 1 : request.newSpeed;
+      let newSpeed = isNaN(parseFloat(request.newSpeed)) ? 1 : request.newSpeed;
       let videos = getVideos();
       if (videos) {
         videos.forEach((video) => {
+          console.log(newSpeed);
           setSpeed(newSpeed, video);
         });
       }
