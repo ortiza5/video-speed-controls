@@ -200,18 +200,6 @@ function skipBackward(video) {
   }
 }
 
-// function toggleFullScreen() {
-//     var video = getVideos();
-//     if (video != null) {
-//         if (!document.webkitFullScreen) {
-//             video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-//             document.webkitFullScreen = true;
-//         } else {
-//             document.webkitCancelFullScreen();
-//         }
-//     }
-// }
-
 // Hotkeys for different actions
 let keysDown = {};
 window.onkeydown = function (e) {
@@ -268,6 +256,7 @@ function tempAlert(msg, duration, insertAfter) {
   // go up the specified number of parents
   let count = 0;
   while (count < NOTIFICATION_LAYER) {
+    // TODO: Sort of hacky to do 3 times, find a better way to check for root element
     if (insertAfter.parentNode.parentNode.parentNode) {
       insertAfter = insertAfter.parentNode;
       count++;
