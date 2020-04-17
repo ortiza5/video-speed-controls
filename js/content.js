@@ -6,13 +6,14 @@ var SPEED = 1;
 var NOTIFICATION_LAYER = 0;
 var IS_NOTIFICATION_LAYER_MAXED = false;
 // hotkeys
-var SLOWER_ENABLED = true;
-var NORMAL_ENABLED = true;
-var FASTER_ENABLED = true;
-var FULLSCREEN_ENABLED = true;
-var PLAYPAUSE_ENABLED = true;
-var SKIP_BACK_ENABLED = true;
-var SKIP_FORWARD_ENABLED = true;
+var HOTKEYS_DISABLED = {
+  slower: false,
+  normal: false,
+  faster: false,
+  pause: false,
+  "skip-back": false,
+  "skip-forward": false,
+};
 // increments
 var SPEED_INC = 0.25;
 var SKIP_INC = 5;
@@ -36,7 +37,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.from === "popup" && SCRIPT_ENABLED) {
     if (request.subject === "needInfo") {
       DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
-      sendResponse({ speed: SPEED, domain: DOMAIN, layer: NOTIFICATION_LAYER });
+      sendResponse({
+        speed: SPEED,
+        domain: DOMAIN,
+        layer: NOTIFICATION_LAYER,
+        hotkeys: HOTKEYS_DISABLED,
+      });
     } else if (request.subject === "changeSpeed") {
       let videos = getVideos();
       if (videos) {
@@ -92,6 +98,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
       }
       sendResponse({ layer: NOTIFICATION_LAYER });
+    } else if (request.subject === "checkboxChange") {
+      HOTKEYS_DISABLED[request.id] = request.state;
+      sendResponse({ id: request.id, newState: HOTKEYS_DISABLED[request.id] });
     }
   }
 });
@@ -216,17 +225,17 @@ window.onkeydown = function (e) {
   let videos = getVideos();
   if (videos) {
     videos.forEach((video) => {
-      if ("F21" in keysDown) {
+      if ("F21" in keysDown && !HOTKEYS_DISABLED["slower"]) {
         decSpeed(video);
-      } else if ("F22" in keysDown) {
+      } else if ("F22" in keysDown && !HOTKEYS_DISABLED["normal"]) {
         setSpeed(1, video);
-      } else if ("F23" in keysDown) {
+      } else if ("F23" in keysDown && !HOTKEYS_DISABLED["faster"]) {
         incSpeed(video);
-      } else if ("k" in keysDown) {
+      } else if ("k" in keysDown && !HOTKEYS_DISABLED["pause"]) {
         playPause(video);
-      } else if ("ArrowLeft" in keysDown) {
+      } else if ("ArrowLeft" in keysDown && !HOTKEYS_DISABLED["skip-back"]) {
         skipBackward(video);
-      } else if ("ArrowRight" in keysDown) {
+      } else if ("ArrowRight" in keysDown && !HOTKEYS_DISABLED["skip-forward"]) {
         skipForward(video);
       }
     });

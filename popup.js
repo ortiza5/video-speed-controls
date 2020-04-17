@@ -6,6 +6,10 @@ function updateValues(info) {
   document.getElementById("video-speed").value = info.speed;
   document.getElementById("website-domain").innerHTML = info.domain;
   document.getElementById("notification-layer").value = info.layer;
+  let ids = Object.keys(info.hotkeys);
+  ids.forEach((id) => {
+    document.getElementById(id).checked = info.hotkeys[id];
+  });
 }
 
 function updateSpeedSpinner(change, tabID) {
@@ -81,5 +85,18 @@ window.addEventListener("DOMContentLoaded", function () {
         }
       );
     };
+
+    let checkboxes = document.querySelectorAll(".hk-checkbox");
+    checkboxes.forEach((checkbox) => {
+      checkbox.onchange = function (event) {
+        chrome.tabs.sendMessage(
+          tabID,
+          { from: "popup", subject: "checkboxChange", id: this.id, state: this.checked },
+          function (response) {
+            document.getElementById(response.id).checked = response.newState;
+          }
+        );
+      };
+    });
   });
 });
