@@ -15,7 +15,6 @@
 //     });
 // });
 
-
 // only enable the extension on pages with html5 videos
 // chrome.runtime.onInstalled.addListener(function () {
 //     chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
@@ -45,31 +44,49 @@
 
 // });
 
-
-// Change the icon
-var icons = {
-    0: "img/num/0.png",
-    0.25: "img/num/0.25.png",
-    0.5: "img/num/0.5.png",
-    0.75: "img/num/0.75.png",
-    1: "img/num/1.png",
-    1.25: "img/num/1.25.png",
-    1.5: "img/num/1.5.png",
-    1.75: "img/num/1.75.png",
-    2: "img/num/2.png",
-    2.25: "img/num/2.25.png",
-    2.5: "img/num/2.5.png",
-    2.75: "img/num/2.75.png",
-    3: "img/num/3.png",
-    "default": "img/num/default.png"
-};
-
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if ((msg.from === 'content') && (msg.subject === 'showPageAction')) {
-        // Enable the page-action for the requesting tab.
-        chrome.pageAction.show(sender.tab.id);
-    } else if ((msg.from === 'content') && (msg.subject === 'changeIcon')) {
-        chrome.pageAction.setIcon({ path: icons[msg.icon], tabId: sender.tab.id });
+  if (msg.from === "content" && msg.subject === "showPageAction") {
+    // Enable the page-action for the requesting tab.
+    chrome.pageAction.show(sender.tab.id);
+  } else if (msg.from === "content" && msg.subject === "changeIcon") {
+    // make icon for the speed
+    let canvas = document.getElementById("icon-making-canvas");
+    if (!canvas) {
+      canvas = document.createElement("CANVAS");
+      canvas.id = "icon-making-canvas";
+      canvas.width = canvas.height = 16;
     }
-    return Promise.resolve("Dummy response to keep the console quiet");
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.rect(0, 0, 16, 16);
+    ctx.fillStyle = "red";
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    fitTextOnCanvas(ctx, msg.speed, "Roboto Condensed", 9, canvas.width);
+
+    let imgData = ctx.getImageData(0, 0, 16, 16);
+
+    // set the icon
+    chrome.pageAction.setIcon({ imageData: imgData, tabId: sender.tab.id });
+  }
+  return Promise.resolve("Dummy response to keep the console quiet");
 });
+
+function fitTextOnCanvas(ctx, text, fontface, yPosition, canvasWidth) {
+  // initial value
+  let fontsize = 13;
+  let margin = 2;
+  let rightSpacing = 0.7;
+
+  // lower the font size until the text fits the canvas
+  do {
+    fontsize -= 0.25;
+    ctx.font = "bold " + fontsize + "px " + fontface;
+  } while (ctx.measureText(text).width + margin > canvasWidth);
+
+  // draw the text
+  ctx.fillText(text, canvasWidth / 2 - rightSpacing, yPosition);
+}

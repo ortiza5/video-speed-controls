@@ -166,19 +166,11 @@ function decSpeed(video) {
 
 // loads the correct icon for the speed
 function setIcon(speed) {
-  if (speed <= 3) {
-    chrome.runtime.sendMessage({
-      from: "content",
-      subject: "changeIcon",
-      icon: speed,
-    });
-  } else {
-    chrome.runtime.sendMessage({
-      from: "content",
-      subject: "changeIcon",
-      icon: "default",
-    });
-  }
+  chrome.runtime.sendMessage({
+    from: "content",
+    subject: "changeIcon",
+    speed: speed,
+  });
 }
 
 // Toggles play pause of video
