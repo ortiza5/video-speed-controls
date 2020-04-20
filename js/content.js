@@ -201,45 +201,6 @@ function skipBackward(video) {
   }
 }
 
-// Hotkeys for different actions
-let keysDown = new Map();
-window.onkeydown = function (e) {
-  // if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  // }
-  keysDown.set(e.key.toLowerCase(), keysDown.size);
-  let target = e.target || e.srcElement;
-  if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
-    return;
-  }
-
-  let videos = getVideos();
-  if (videos) {
-    videos.forEach((video) => {
-      if (mapArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
-        decSpeed(video);
-      } else if (mapArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
-        setSpeed(1, video);
-      } else if (mapArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
-        incSpeed(video);
-      } else if (mapArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
-        playPause(video);
-      } else if (mapArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
-        skipBackward(video);
-      } else if (mapArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
-        skipForward(video);
-      }
-    });
-  }
-};
-
-window.onkeyup = function (e) {
-  if (keysDown.has(e.key.toLowerCase())) {
-    keysDown.delete(e.key.toLowerCase());
-  }
-};
-
 // Notification to show alert
 function tempAlert(msg, duration, insertAfter) {
   // remove any old notification first
@@ -283,7 +244,7 @@ function tempAlert(msg, duration, insertAfter) {
   }, duration);
 }
 
-// checking array equality
+// checking equality of map keys to array values, not case sensitive
 function mapArrayMatch(map1, array1) {
   // Check if the map and array have the same number of entries
   if (map1.size !== array1.length) return false;
@@ -296,3 +257,42 @@ function mapArrayMatch(map1, array1) {
   // Otherwise, return true
   return true;
 }
+
+// Hotkeys for different actions
+let keysDown = new Map();
+window.onkeydown = function (e) {
+  // if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  // }
+  keysDown.set(e.key.toLowerCase(), keysDown.size);
+  let target = e.target || e.srcElement;
+  if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
+    return;
+  }
+
+  let videos = getVideos();
+  if (videos) {
+    videos.forEach((video) => {
+      if (mapArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
+        decSpeed(video);
+      } else if (mapArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
+        setSpeed(1, video);
+      } else if (mapArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
+        incSpeed(video);
+      } else if (mapArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
+        playPause(video);
+      } else if (mapArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
+        skipBackward(video);
+      } else if (mapArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
+        skipForward(video);
+      }
+    });
+  }
+};
+
+window.onkeyup = function (e) {
+  if (keysDown.has(e.key.toLowerCase())) {
+    keysDown.delete(e.key.toLowerCase());
+  }
+};
