@@ -202,13 +202,13 @@ function skipBackward(video) {
 }
 
 // Hotkeys for different actions
-let keysDown = {};
+let keysDown = new Map();
 window.onkeydown = function (e) {
   // if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
   //   e.preventDefault();
   //   e.stopPropagation();
   // }
-  keysDown[e.key] = true;
+  keysDown.set(e.key.toLowerCase(), keysDown.size);
   let target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
     return;
@@ -217,17 +217,17 @@ window.onkeydown = function (e) {
   let videos = getVideos();
   if (videos) {
     videos.forEach((video) => {
-      if ("F21" in keysDown && !HOTKEYS_DISABLED["slower"]) {
+      if (mapArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
         decSpeed(video);
-      } else if ("F22" in keysDown && !HOTKEYS_DISABLED["normal"]) {
+      } else if (mapArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
         setSpeed(1, video);
-      } else if ("F23" in keysDown && !HOTKEYS_DISABLED["faster"]) {
+      } else if (mapArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
         incSpeed(video);
-      } else if ("k" in keysDown && !HOTKEYS_DISABLED["pause"]) {
+      } else if (mapArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
         playPause(video);
-      } else if ("ArrowLeft" in keysDown && !HOTKEYS_DISABLED["skip-back"]) {
+      } else if (mapArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
         skipBackward(video);
-      } else if ("ArrowRight" in keysDown && !HOTKEYS_DISABLED["skip-forward"]) {
+      } else if (mapArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
         skipForward(video);
       }
     });
@@ -235,8 +235,9 @@ window.onkeydown = function (e) {
 };
 
 window.onkeyup = function (e) {
-  keysDown[e.key] = false;
-  delete keysDown[e.key];
+  if (keysDown.has(e.key.toLowerCase())) {
+    keysDown.delete(e.key.toLowerCase());
+  }
 };
 
 // Notification to show alert
@@ -283,12 +284,14 @@ function tempAlert(msg, duration, insertAfter) {
 }
 
 // checking array equality
-function arrayMatch(arr1, arr2) {
-  // Check if the arrays are the same length
-  if (arr1.length !== arr2.length) return false;
+function mapArrayMatch(map1, array1) {
+  // Check if the map and array have the same number of entries
+  if (map1.size !== array1.length) return false;
   // Check if all items exist and are in the same order
-  for (var i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) return false;
+  let i = 0;
+  for (const element of map1) {
+    if (element[0].toLowerCase() !== array1[i].toLowerCase()) return false;
+    i++;
   }
   // Otherwise, return true
   return true;

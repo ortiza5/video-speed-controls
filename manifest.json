@@ -1,7 +1,7 @@
 {
-  "name": "YouTube 2x Speed",
-  "description": "Why not speed up the world",
-  "version": "1.2",
+  "name": "Video Speed Control",
+  "description": "Why not speed up the world? Change the playback speed of HTML5 video players.",
+  "version": "1.4",
   "manifest_version": 2,
   "permissions": ["<all_urls>", "activeTab", "notifications", "declarativeContent", "storage"],
   "background": {
@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["js/content.js", "old/jquery-3.4.1.slim.min.js"],
+      "js": ["js/content.js"],
       "run_at": "document_end",
       "all_frames": true
     }
