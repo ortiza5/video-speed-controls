@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="options.js"></script>
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
+    <link rel="stylesheet" href="fa.css">
+    <style>
+        html * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: black;
+            margin: 0px !important;
+            padding: 50px;
+        }
+
+        h2 {
+            color: #fafafa;
+            font-family: system-ui;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .title-area {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .shortcut-area {
+            padding-left: 10px;
+        }
+
+        #reset {
+            font-size: 12px;
+            font-weight: 400;
+            margin: auto 0;
+        }
+
+        .card {
+            padding: 12px 18px 18px 18px;
+            background-color: #171b1f;
+            border: 1px solid #3e4852;
+            border-radius: 5px;
+            color: #fafafa;
+            font-family: system-ui;
+        }
+
+        .shortcut {
+            display: flex;
+            justify-content: space-between;
+            padding: 1px;
+            font-size: 12px;
+            font-weight: 400;
+            position: relative;
+        }
+
+        .shortcut-description {
+            margin: auto 0;
+        }
+
+        .btn {
+            background-color: rgb(42, 52, 61);
+            border: 1px solid #3e4852;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: inline-block;
+            position: relative;
+            height: 30px;
+        }
+
+        hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 0;
+            border-top: 1px solid #3e4852;
+            box-sizing: content-box;
+            height: 0;
+            overflow: visible;
+        }
+
+        .close {
+            margin: 6px 3px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: inline-block;
+            vertical-align: middle;
+            animation: pop 16ms linear;
+            width: 18px;
+            height: 18px;
+            border-radius: 1px;
+            background-color: rgba(0, 0, 0, 0);
+            opacity: 1;
+            border: 0;
+            padding: 0;
+            fill: #fafafa;
+        }
+
+
+        .close:hover {
+            fill: red;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .shortcut-text {
+            display: inline-block;
+            align-items: center;
+            vertical-align: middle;
+            margin: 6px 10px;
+        }
+
+        .hotkeys .shortcut-text {
+            margin-right: 0;
+        }
+
+        .btn-hov:hover {
+            background-color: #3e4852;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="title-area">
+            <h2>Set Keyboard Shortcuts</h2>
+            <div class="btn btn-hov" id="reset">
+                <span class="shortcut-text">
+                    Reset all
+                </span>
+            </div>
+        </div>
+        <div class="shortcut-area">
+            <hr>
+            <div class="shortcut">
+                <span class="shortcut-description">
+                    Make the Video Slower
+                </span>
+                <div class="btn btn-hov" id="slower">
+                    <span class="shortcut-text">
+                        Click to type a new shortcut
+                    </span>
+
+
+                </div>
+            </div>
+            <hr>
+            <div class="shortcut">
+                <span class="shortcut-description">
+                    Make the Video Play at the Default Speed
+                </span>
+                <div class="btn btn-hov" id="normal">
+                    <span class="shortcut-text">
+                        Click to type a new shortcut
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div class="shortcut">
+                <span class="shortcut-description">
+                    Make the Video Faster
+                </span>
+                <div class="btn btn-hov" id="faster">
+                    <span class="shortcut-text">
+                        Click to type a new shortcut
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
