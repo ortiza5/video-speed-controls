@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="options.js"></script>
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
     <link rel="stylesheet" href="fa.css">
     <style>
@@ -13,7 +12,6 @@
         body {
             background: black;
             margin: 0px !important;
-            padding: 50px;
         }
 
         h2 {
@@ -46,6 +44,8 @@
             border-radius: 5px;
             color: #fafafa;
             font-family: system-ui;
+            max-width: 700px;
+            margin: 20px auto;
         }
 
         .shortcut {
@@ -117,6 +117,10 @@
         .btn-hov:hover {
             background-color: #3e4852;
         }
+
+        .btn-enter {
+            background-color: #00B1E2;
+        }
     </style>
 </head>
 
@@ -132,43 +136,27 @@
         </div>
         <div class="shortcut-area">
             <hr>
-            <div class="shortcut">
+            <div class="shortcut" id="slower">
                 <span class="shortcut-description">
                     Make the Video Slower
                 </span>
-                <div class="btn btn-hov" id="slower">
-                    <span class="shortcut-text">
-                        Click to type a new shortcut
-                    </span>
-
-
-                </div>
             </div>
             <hr>
-            <div class="shortcut">
+            <div class="shortcut" id="normal">
                 <span class="shortcut-description">
                     Make the Video Play at the Default Speed
                 </span>
-                <div class="btn btn-hov" id="normal">
-                    <span class="shortcut-text">
-                        Click to type a new shortcut
-                    </span>
-                </div>
             </div>
             <hr>
-            <div class="shortcut">
+            <div class="shortcut" id="faster">
                 <span class="shortcut-description">
                     Make the Video Faster
                 </span>
-                <div class="btn btn-hov" id="faster">
-                    <span class="shortcut-text">
-                        Click to type a new shortcut
-                    </span>
-                </div>
             </div>
         </div>
     </div>
 
+    <script type="text/javascript" src="options.js"></script>
 </body>
 
 </html>
