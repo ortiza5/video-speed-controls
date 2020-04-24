@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(function () {
       position: "right",
       text: "#fff",
     },
-    speed: 2,
+    speed: 1.75,
   };
 
   let youtube = {
