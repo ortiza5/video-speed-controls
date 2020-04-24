@@ -1,23 +1,24 @@
 // globals
 var keysDown = new Set();
+var SETTINGS_FULL;
+var SPEED = 1;
+// hotkeys
+var HOTKEY_CODES;
+var HOTKEYS_DISABLED;
+// increments
+var SPEED_INC;
+var SKIP_INC;
+// notification
+var NOTIFICATION_BACKGROUND;
+var NOTIFICATION_LAYER;
+var NOTIFICATION_POSITION;
+var NOTIFICATION_TEXT;
+var IS_NOTIFICATION_LAYER_MAXED = false;
+// site info
+var DOMAIN = null;
 var PLAYER_TYPE = null;
 var SCRIPT_ENABLED = false;
-var DOMAIN = null;
-var SPEED = 1;
-var NOTIFICATION_LAYER = 0;
-var IS_NOTIFICATION_LAYER_MAXED = false;
-// hotkeys
-var HOTKEYS_DISABLED = {
-  slower: false,
-  normal: false,
-  faster: false,
-  pause: false,
-  "skip-back": false,
-  "skip-forward": false,
-};
-// increments
-var SPEED_INC = 0.25;
-var SKIP_INC = 5;
+getSettings();
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
@@ -115,6 +116,25 @@ window.onblur = function () {
 
 // gets the video from either the video or iframe route
 // RETURNS: Video element -or- null if their isn't a video
+function getSettings(callback) {
+  chrome.storage.local.get(["extension-settings"], function (result) {
+    SETTINGS_FULL = result["extension-settings"];
+    HOTKEY_CODES = SETTINGS_FULL.hotkeys.codes;
+    HOTKEYS_DISABLED = SETTINGS_FULL.hotkeys.disables;
+    SKIP_INC = SETTINGS_FULL.increments.skip;
+    SPEED_INC = SETTINGS_FULL.increments.speed;
+    NOTIFICATION_BACKGROUND = SETTINGS_FULL.notification.background;
+    NOTIFICATION_LAYER = SETTINGS_FULL.notification.layer;
+    NOTIFICATION_POSITION = SETTINGS_FULL.notification.position;
+    NOTIFICATION_TEXT = SETTINGS_FULL.notification.text;
+    SPEED = SETTINGS_FULL.speed;
+
+    if (callback instanceof Function) {
+      callback();
+    }
+  });
+}
+
 function getVideos() {
   let videos = document.getElementsByTagName("video");
   if (videos.length >= 1) {
@@ -269,8 +289,6 @@ function setArrayMatch(set1, array1) {
 // Hotkeys for different actions
 function keyPress(e) {
   keysDown.add(e.key.toLowerCase());
-  console.log(keysDown);
-  console.log(setArrayMatch(keysDown, ["f21"]));
   let target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
     return;
