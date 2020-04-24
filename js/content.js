@@ -1,7 +1,7 @@
 // globals
 var keysDown = new Set();
 var SETTINGS_FULL;
-var SPEED = 1;
+var SPEED;
 // hotkeys
 var HOTKEY_CODES;
 var HOTKEYS_DISABLED;
@@ -21,6 +21,13 @@ var SCRIPT_ENABLED = false;
 var VIDEOS = new Set();
 
 getSettings();
+
+getSiteSpecificSettings(function () {
+  getVideos();
+  VIDEOS.forEach((video) => {
+    setSpeed(SPEED, video);
+  });
+});
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
@@ -124,6 +131,28 @@ function getSettings(callback) {
     if (callback instanceof Function) {
       callback();
     }
+    return SETTINGS_FULL;
+  });
+}
+
+function getSiteSpecificSettings(callback) {
+  getDomain();
+  let siteSettings = {};
+  chrome.storage.local.get([DOMAIN], function (result) {
+    if (!chrome.runtime.error) {
+      siteSettings = result[DOMAIN];
+      console.log(siteSettings);
+      HOTKEYS_DISABLED = siteSettings.disables;
+      NOTIFICATION_LAYER = siteSettings.layer;
+      SPEED = siteSettings.speed;
+    } else {
+      console.log("No site specific settings");
+    }
+
+    if (callback instanceof Function) {
+      callback();
+    }
+    return siteSettings;
   });
 }
 
