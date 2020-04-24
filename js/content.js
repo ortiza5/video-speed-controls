@@ -16,7 +16,6 @@ var NOTIFICATION_TEXT;
 var IS_NOTIFICATION_LAYER_MAXED = false;
 // site info
 var DOMAIN = null;
-var PLAYER_TYPE = null;
 var SCRIPT_ENABLED = false;
 var VIDEOS = new Set();
 
@@ -159,18 +158,12 @@ function getSiteSpecificSettings(callback) {
 function getVideos() {
   let new_videos = document.getElementsByTagName("video");
   if (new_videos.length >= 1) {
-    getVideoType();
     VIDEOS = new Set(new_videos);
+    return VIDEOS;
   }
+  return new Set();
 }
 
-// set the global type of player
-function getVideoType() {
-  // youtube
-  type = document.getElementsByClassName("ytp-chrome-controls");
-  if (type.length >= 1) {
-    PLAYER_TYPE = "youtube";
-  }
 function getDomain() {
   DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
   return DOMAIN;
@@ -225,30 +218,21 @@ function setIcon(speed) {
 
 // Toggles play pause of video
 function playPause(video) {
-  // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (PLAYER_TYPE !== "youtube") {
-    if (video.paused) {
-      video.play();
-    } else {
-      video.pause();
-    }
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
   }
 }
 
 //
 function skipForward(video) {
-  // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (PLAYER_TYPE !== "youtube") {
-    video.currentTime += SKIP_INC;
-  }
+  video.currentTime += SKIP_INC;
 }
 
 //
 function skipBackward(video) {
-  // BUG-FIX: Youtube was pausing too quickly to prevent double toggling, so letting youtube handle it
-  if (PLAYER_TYPE !== "youtube") {
-    video.currentTime -= SKIP_INC;
-  }
+  video.currentTime -= SKIP_INC;
 }
 
 // Notification to show alert
