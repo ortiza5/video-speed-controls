@@ -3,7 +3,7 @@
   "description": "Why not speed up the world? Change the playback speed of HTML5 video players.",
   "version": "1.4",
   "manifest_version": 2,
-  "permissions": ["<all_urls>", "activeTab", "notifications", "declarativeContent", "storage"],
+  "permissions": ["<all_urls>", "activeTab", "storage"],
   "background": {
     "scripts": ["js/background.js"],
     "persistent": false
@@ -16,6 +16,7 @@
       "all_frames": true
     }
   ],
+  "options_page": "options.html",
   "page_action": {
     "default_icon": {
       "19": "img/icon-19.png",
