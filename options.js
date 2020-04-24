@@ -1,8 +1,6 @@
-let keyString = "";
 let displayKeys = `
         <div class="hotkeys btn" id="slower-btn">
             <span class="shortcut-text">
-                ${keyString}
             </span>
             <button class="close" title="Delete shortcut">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
@@ -13,27 +11,26 @@ let displayKeys = `
         </div>
     `;
 
+var SETTINGS_FULL;
+var HOTKEY_CODES;
+var HOTKEY_DISABLES;
+
+function getSettings(callback) {
+  chrome.storage.local.get(["extension-settings"], function (result) {
+    SETTINGS_FULL = result["extension-settings"];
+    HOTKEYS_DISABLED = SETTINGS_FULL.hotkeys.disables;
+    HOTKEY_CODES = SETTINGS_FULL.hotkeys.codes;
+    console.log(HOTKEY_CODES);
+    if (callback instanceof Function) {
+      callback();
+    }
+  });
+}
+
 function populateFields() {
   let hotkeyDivs = document.querySelectorAll(".shortcut");
   hotkeyDivs.forEach((hotkeyDiv) => {
-    let el = document.createElement("div");
-    // TODO: Check if hotkey combo in storage
-    // if in storage print stored combo
-    if (false) {
-      el.setAttribute("id", hotkeyDiv.id + "-hotkey");
-      el.setAttribute("class", "btn hotkeys");
-    } else {
-      el.setAttribute("id", hotkeyDiv.id + "-btn");
-      el.setAttribute("class", "btn btn-hov");
-      el.innerHTML = `
-            <span class="shortcut-text">
-                Click to type a new shortcut
-            </span>
-        `;
-      // Add listner for new hotkey input
-      el.addEventListener("click", enterNewHotkey);
-      hotkeyDiv.appendChild(el);
-    }
+    setHotkeyBtn(hotkeyDiv);
   });
 }
 
@@ -46,6 +43,40 @@ function enterNewHotkey(event) {
           Enter the shortcut
   `;
 
+  let keysDown = new Set();
+  let keysFinal;
+  window.addEventListener("keydown", keyPress);
+  window.addEventListener("keyup", keyRelease);
+
+  function keyPress(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // hitting escape cancels input
+    if (e.key.toLowerCase() === "escape") {
+      window.removeEventListener("keydown", keyPress);
+      window.removeEventListener("keyup", keyRelease);
+      setHotkeyBtn(element.parentNode);
+    }
+    keysDown.add(e.key.toLowerCase(), keysDown.size);
+    console.log(keysDown);
+    textArea.innerHTML = formateHotkeys(keysDown);
+    keysFinal = new Set(keysDown);
+  }
+  function keyRelease(e) {
+    keysDown.delete(e.key.toLowerCase());
+
+    // once no more keys are pressed, the final combo is recorded
+    if (keysDown.size === 0) {
+      // TODO: Save to storage
+      window.removeEventListener("keydown", keyPress);
+      window.removeEventListener("keyup", keyRelease);
+      setHotkeyBtn(element.parentNode);
+    }
+  }
+}
+
+function formateHotkeys(set1) {
   let replaceTable = {
     Control: "Ctrl",
     Arrowup: "&uarr;",
@@ -58,36 +89,49 @@ function enterNewHotkey(event) {
     Delete: "Del",
   };
 
-  let keysDown = new Set();
-  let keysFinal;
-  window.addEventListener("keydown", keyPress);
-  window.addEventListener("keyup", keyRelease);
-
-  function keyPress(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    keysDown.add(e.key.toLowerCase(), keysDown.size);
-    console.log(keysDown);
-    let keyString = [...keysDown].map((c) => c.slice(0, 1).toUpperCase() + c.slice(1)).join(" + ");
-    keyString = keyString.replace(
-      /Control|Arrowup|Arrowright|Arrowdown|Arrowleft|\s\s|Pageup|Pagedown|Delete/g,
-      function (match) {
-        return replaceTable[match];
-      }
-    );
-    keyString = keyString === " " ? "Space" : keyString;
-    textArea.innerHTML = keyString;
-    keysFinal = new Set(keysDown);
-  }
-  function keyRelease(e) {
-    keysDown.delete(e.key.toLowerCase());
-    if (keysDown.size === 0) {
-      // TODO: Save to storage
-      window.removeEventListener("keydown", keyPress);
-      window.removeEventListener("keyup", keyRelease);
+  let keyString = [...set1].map((c) => c.slice(0, 1).toUpperCase() + c.slice(1)).join(" + ");
+  keyString = keyString.replace(
+    /Control|Arrowup|Arrowright|Arrowdown|Arrowleft|\s\s|Pageup|Pagedown|Delete/g,
+    function (match) {
+      return replaceTable[match];
     }
+  );
+  keyString = keyString === " " ? "Space" : keyString;
+
+  return keyString;
+}
+
+function setHotkeyBtn(element) {
+  let el = document.createElement("div");
+  // TODO: Check if hotkey combo in storage
+  // if in storage print stored combo
+  if (false) {
+    // delete previous btn
+    let old = document.getElementById(element.id + "-hotkey");
+    if (old !== null && element.parentNode) {
+      old.parentNode.removeChild(old);
+    }
+    el.setAttribute("id", element.id + "-hotkey");
+    el.setAttribute("class", "btn hotkeys");
+  } else {
+    // delete any previous btn
+    let old = document.getElementById(element.id + "-btn");
+    if (old !== null && element.parentNode) {
+      old.parentNode.removeChild(old);
+    }
+
+    el.setAttribute("id", element.id + "-btn");
+    el.setAttribute("class", "btn btn-hov");
+    el.innerHTML = `
+            <span class="shortcut-text">
+                Click to type a new shortcut
+            </span>
+        `;
+    // Add listner for new hotkey input
+    el.addEventListener("click", enterNewHotkey);
+    element.appendChild(el);
   }
 }
 
 // Once the DOM is ready...
-window.addEventListener("DOMContentLoaded", populateFields);
+getSettings(window.addEventListener("DOMContentLoaded", populateFields));
