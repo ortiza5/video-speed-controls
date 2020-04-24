@@ -18,12 +18,17 @@ chrome.runtime.onInstalled.addListener(function () {
         "skip-forward": false,
       },
     },
+    increments: {
+      speed: 0.25,
+      skip: 5,
+    },
     notification: {
       position: "right",
       layer: 0,
       text: "#fff",
       background: "#d90e00",
     },
+    speed: 2,
   };
 
   let youtube = {
