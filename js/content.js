@@ -1,4 +1,5 @@
 // globals
+var keysDown = new Set();
 var PLAYER_TYPE = null;
 var SCRIPT_ENABLED = false;
 var DOMAIN = null;
@@ -27,8 +28,10 @@ var SKIP_INC = 5;
       subject: "showPageAction",
     });
     SCRIPT_ENABLED = true;
+    startKeyPressListeners();
   } else {
     SCRIPT_ENABLED = false;
+    removeKeyPressListeners();
   }
 });
 
@@ -104,6 +107,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
   }
 });
+
+//* BUG-FIX: Changing tabs or windows using keyboard failed to clear the keys from the keysDown set
+window.onblur = function () {
+  keysDown.clear();
+};
 
 // gets the video from either the video or iframe route
 // RETURNS: Video element -or- null if their isn't a video
@@ -244,14 +252,14 @@ function tempAlert(msg, duration, insertAfter) {
   }, duration);
 }
 
-// checking equality of map keys to array values, not case sensitive
-function mapArrayMatch(map1, array1) {
+// checking equality of set values to array values, not case sensitive
+function setArrayMatch(set1, array1) {
   // Check if the map and array have the same number of entries
-  if (map1.size !== array1.length) return false;
+  if (set1.size !== array1.length) return false;
   // Check if all items exist and are in the same order
   let i = 0;
-  for (const element of map1) {
-    if (element[0].toLowerCase() !== array1[i].toLowerCase()) return false;
+  for (const element of set1) {
+    if (element.toLowerCase() !== array1[i].toLowerCase()) return false;
     i++;
   }
   // Otherwise, return true
@@ -259,13 +267,10 @@ function mapArrayMatch(map1, array1) {
 }
 
 // Hotkeys for different actions
-let keysDown = new Map();
-window.onkeydown = function (e) {
-  // if (e.key in ["F21", "F22", "F23", "k", "ArrowLeft", "ArrowRight"]) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  // }
-  keysDown.set(e.key.toLowerCase(), keysDown.size);
+function keyPress(e) {
+  keysDown.add(e.key.toLowerCase());
+  console.log(keysDown);
+  console.log(setArrayMatch(keysDown, ["f21"]));
   let target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
     return;
@@ -274,25 +279,33 @@ window.onkeydown = function (e) {
   let videos = getVideos();
   if (videos) {
     videos.forEach((video) => {
-      if (mapArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
+      if (setArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
         decSpeed(video);
-      } else if (mapArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
+      } else if (setArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
         setSpeed(1, video);
-      } else if (mapArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
+      } else if (setArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
         incSpeed(video);
-      } else if (mapArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
+      } else if (setArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
         playPause(video);
-      } else if (mapArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
+      } else if (setArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
         skipBackward(video);
-      } else if (mapArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
+      } else if (setArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
         skipForward(video);
       }
     });
   }
-};
+}
 
-window.onkeyup = function (e) {
-  if (keysDown.has(e.key.toLowerCase())) {
-    keysDown.delete(e.key.toLowerCase());
-  }
-};
+function keyRelease(e) {
+  keysDown.delete(e.key.toLowerCase());
+}
+
+function startKeyPressListeners() {
+  window.addEventListener("keydown", keyPress);
+  window.addEventListener("keyup", keyRelease);
+}
+
+function removeKeyPressListeners() {
+  window.removeEventListener("keydown", keyPress);
+  window.removeEventListener("keyup", keyRelease);
+}
