@@ -19,21 +19,19 @@ chrome.runtime.onInstalled.addListener(function () {
       },
     },
     increments: {
-      speed: 0.25,
       skip: 5,
+      speed: 0.25,
     },
     notification: {
-      position: "right",
-      layer: 0,
-      text: "#fff",
       background: "#d90e00",
+      layer: 0,
+      position: "right",
+      text: "#fff",
     },
     speed: 2,
   };
 
   let youtube = {
-    speed: 2,
-    layer: 1,
     disables: {
       slower: false,
       normal: false,
@@ -42,6 +40,8 @@ chrome.runtime.onInstalled.addListener(function () {
       "skip-back": true,
       "skip-forward": true,
     },
+    layer: 1,
+    speed: 2,
   };
   chrome.storage.local.set({ "extension-settings": settings }, function () {
     console.log("Initial setting set...");
