@@ -18,12 +18,14 @@ var IS_NOTIFICATION_LAYER_MAXED = false;
 var DOMAIN = null;
 var PLAYER_TYPE = null;
 var SCRIPT_ENABLED = false;
+var VIDEOS = new Set();
+
 getSettings();
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
-  let videos = getVideos();
-  if (videos) {
+  getVideos();
+  if (VIDEOS.size >= 0) {
     chrome.runtime.sendMessage({
       from: "content",
       subject: "showPageAction",
@@ -48,27 +50,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         hotkeys: HOTKEYS_DISABLED,
       });
     } else if (request.subject === "changeSpeed") {
-      let videos = getVideos();
-      if (videos) {
-        if (request.direction === "up") {
-          videos.forEach((video) => {
-            incSpeed(video);
-          });
-        } else if (request.direction === "down") {
-          videos.forEach((video) => {
-            decSpeed(video);
-          });
-        }
-        sendResponse({ speed: SPEED });
-      }
-    } else if (request.subject === "typedSpeed") {
-      let newSpeed = isNaN(parseFloat(request.newSpeed)) ? 1 : request.newSpeed;
-      let videos = getVideos();
-      if (videos) {
-        videos.forEach((video) => {
-          setSpeed(newSpeed, video);
+      getVideos();
+      if (request.direction === "up") {
+        VIDEOS.forEach((video) => {
+          incSpeed(video);
+        });
+      } else if (request.direction === "down") {
+        VIDEOS.forEach((video) => {
+          decSpeed(video);
         });
       }
+      sendResponse({ speed: SPEED });
+    } else if (request.subject === "typedSpeed") {
+      let newSpeed = isNaN(parseFloat(request.newSpeed)) ? 1 : request.newSpeed;
+      getVideos();
+      VIDEOS.forEach((video) => {
+        setSpeed(newSpeed, video);
+      });
       sendResponse({ speed: SPEED });
     } else if (request.subject === "changeLayer") {
       if (request.direction === "up" && !IS_NOTIFICATION_LAYER_MAXED) {
@@ -82,12 +80,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         IS_NOTIFICATION_LAYER_MAXED = false;
       }
       // show where the new layer will be
-      let videos = getVideos();
-      if (videos) {
-        videos.forEach((video) => {
-          tempAlert("This is the New Layer", 2000, video);
-        });
-      }
+      getVideos();
+      VIDEOS.forEach((video) => {
+        tempAlert("This is the New Layer", 2000, video);
+      });
       sendResponse({ layer: NOTIFICATION_LAYER });
     } else if (request.subject === "typedLayer") {
       let newLayer = isNaN(parseInt(request.newLayer)) ? NOTIFICATION_LAYER : request.newLayer;
@@ -95,12 +91,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         NOTIFICATION_LAYER = newLayer;
       }
       // show where the new layer will be
-      let videos = getVideos();
-      if (videos) {
-        videos.forEach((video) => {
-          tempAlert("This is the New Layer", 2000, video);
-        });
-      }
+      getVideos();
+      VIDEOS.forEach((video) => {
+        tempAlert("This is the New Layer", 2000, video);
+      });
       sendResponse({ layer: NOTIFICATION_LAYER });
     } else if (request.subject === "checkboxChange") {
       HOTKEYS_DISABLED[request.id] = request.state;
@@ -114,8 +108,6 @@ window.onblur = function () {
   keysDown.clear();
 };
 
-// gets the video from either the video or iframe route
-// RETURNS: Video element -or- null if their isn't a video
 function getSettings(callback) {
   chrome.storage.local.get(["extension-settings"], function (result) {
     SETTINGS_FULL = result["extension-settings"];
@@ -136,13 +128,11 @@ function getSettings(callback) {
 }
 
 function getVideos() {
-  let videos = document.getElementsByTagName("video");
-  if (videos.length >= 1) {
+  let new_videos = document.getElementsByTagName("video");
+  if (new_videos.length >= 1) {
     getVideoType();
-    return Array.from(videos);
+    VIDEOS = new Set(new_videos);
   }
-
-  return; // if a video doesn't exist
 }
 
 // set the global type of player
@@ -278,7 +268,7 @@ function setArrayMatch(set1, array1) {
   if (set1.size !== array1.length) return false;
   // Check if all items exist and are in the same order
   let i = 0;
-  for (const element of set1) {
+  for (let element of set1) {
     if (element.toLowerCase() !== array1[i].toLowerCase()) return false;
     i++;
   }
@@ -294,24 +284,21 @@ function keyPress(e) {
     return;
   }
 
-  let videos = getVideos();
-  if (videos) {
-    videos.forEach((video) => {
-      if (setArrayMatch(keysDown, ["f21"]) && !HOTKEYS_DISABLED["slower"]) {
-        decSpeed(video);
-      } else if (setArrayMatch(keysDown, ["f22"]) && !HOTKEYS_DISABLED["normal"]) {
-        setSpeed(1, video);
-      } else if (setArrayMatch(keysDown, ["f23"]) && !HOTKEYS_DISABLED["faster"]) {
-        incSpeed(video);
-      } else if (setArrayMatch(keysDown, ["k"]) && !HOTKEYS_DISABLED["pause"]) {
-        playPause(video);
-      } else if (setArrayMatch(keysDown, ["arrowleft"]) && !HOTKEYS_DISABLED["skip-back"]) {
-        skipBackward(video);
-      } else if (setArrayMatch(keysDown, ["arrowright"]) && !HOTKEYS_DISABLED["skip-forward"]) {
-        skipForward(video);
-      }
-    });
-  }
+  VIDEOS.forEach((video) => {
+    if (setArrayMatch(keysDown, HOTKEY_CODES["slower"]) && !HOTKEYS_DISABLED["slower"]) {
+      decSpeed(video);
+    } else if (setArrayMatch(keysDown, HOTKEY_CODES["normal"]) && !HOTKEYS_DISABLED["normal"]) {
+      setSpeed(1, video);
+    } else if (setArrayMatch(keysDown, HOTKEY_CODES["faster"]) && !HOTKEYS_DISABLED["faster"]) {
+      incSpeed(video);
+    } else if (setArrayMatch(keysDown, HOTKEY_CODES["pause"]) && !HOTKEYS_DISABLED["pause"]) {
+      playPause(video);
+    } else if (setArrayMatch(keysDown, HOTKEY_CODES["skip-back"]) && !HOTKEYS_DISABLED["skip-back"]) {
+      skipBackward(video);
+    } else if (setArrayMatch(keysDown, HOTKEY_CODES["skip-forward"]) && !HOTKEYS_DISABLED["skip-forward"]) {
+      skipForward(video);
+    }
+  });
 }
 
 function keyRelease(e) {
