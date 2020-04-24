@@ -1,48 +1,50 @@
-// // only enable the extension on pages with html5 videos
-// chrome.runtime.onInstalled.addListener(function () {
-//     chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-//         chrome.declarativeContent.onPageChanged.addRules([{
-//             conditions: [
-//                 new chrome.declarativeContent.PageStateMatcher({
-//                     pageUrl: {
-//                         schemes: ['http', 'https']
-//                     }
-//                 })
-//             ],
-//             actions: [new chrome.declarativeContent.ShowPageAction()]
-//         }]);
+chrome.runtime.onInstalled.addListener(function () {
+  let settings = {
+    hotkeys: {
+      codes: {
+        slower: ["F21"],
+        normal: ["F22"],
+        faster: ["F23"],
+        pause: ["k"],
+        "skip-back": ["ArrowLeft"],
+        "skip-forward": ["ArrowRight"],
+      },
+      disables: {
+        slower: false,
+        normal: false,
+        faster: false,
+        pause: false,
+        "skip-back": false,
+        "skip-forward": false,
+      },
+    },
+    notification: {
+      position: "right",
+      layer: 0,
+      text: "#fff",
+      background: "#d90e00",
+    },
+  };
 
-//     });
-// });
-
-// only enable the extension on pages with html5 videos
-// chrome.runtime.onInstalled.addListener(function () {
-//     chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-//         chrome.declarativeContent.onPageChanged.addRules([{
-//             conditions: [
-//                 new chrome.declarativeContent.PageStateMatcher({
-//                     css: ["video"]
-//                 })
-//             ],
-//             actions: [new chrome.declarativeContent.ShowPageAction()]
-//         }]);
-
-//     });
-// });
-
-// // get keyboard shortcut
-// chrome.commands.onCommand.addListener(function (command) {
-//     console.log('Command:', command);
-// });
-
-// chrome.pageAction.onClicked.addListener(function (browserTab) {
-//     chrome.tabs.executeScript(null, { file: "js/content.js" }, function () {
-//         chrome.tabs.sendMessage(browserTab.id, "Background page started.", function (response) {
-//             console.log("Now double speed");
-//         });
-//     });
-
-// });
+  let youtube = {
+    speed: 2,
+    layer: 1,
+    disables: {
+      slower: false,
+      normal: false,
+      faster: false,
+      pause: true,
+      "skip-back": true,
+      "skip-forward": true,
+    },
+  };
+  chrome.storage.local.set({ "extension-settings": settings }, function () {
+    console.log("Initial setting set...");
+  });
+  chrome.storage.local.set({ "www.youtube.com": youtube }, function () {
+    console.log("Youtube setting set...");
+  });
+});
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.from === "content" && msg.subject === "showPageAction") {
