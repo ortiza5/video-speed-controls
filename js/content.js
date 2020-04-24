@@ -42,7 +42,7 @@ getSettings();
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.from === "popup" && SCRIPT_ENABLED) {
     if (request.subject === "needInfo") {
-      DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
+      getDomain();
       sendResponse({
         speed: SPEED,
         domain: DOMAIN,
@@ -142,6 +142,9 @@ function getVideoType() {
   if (type.length >= 1) {
     PLAYER_TYPE = "youtube";
   }
+function getDomain() {
+  DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
+  return DOMAIN;
 }
 
 // if a video exists, set it to the speed and give a notification
