@@ -188,16 +188,15 @@ function getDomain() {
   return DOMAIN;
 }
 
-// if a video exists, set it to the speed and give a notification
+// set video to the speed and give a notification, restricts available speeds
 function setSpeed(newSpeed, video) {
-  newSpeed = newSpeed > 16 ? 16 : newSpeed < 0 ? 0 : newSpeed;
-  SPEED = newSpeed;
-  video.playbackRate = newSpeed;
-  tempAlert("Speed: " + newSpeed, 2000, video);
-  setIcon(newSpeed);
-  // if (callback instanceof Function) {
-  //   callback();
-  // }
+  //* BUG-FIX: playback rates below 0.07 rather than 0 were causing errors
+  newSpeed = newSpeed > 16 ? 16 : newSpeed < 0.07 ? 0 : newSpeed;
+  // limit decimal values to 2 digits, + in front truncates 2.00 -> 2
+  SPEED = +newSpeed.toFixed(2);
+  video.playbackRate = SPEED;
+  tempAlert("Speed: " + SPEED, 2000, video);
+  setIcon(SPEED);
 }
 
 // if a video exists, increment the speed by the speed increment
