@@ -12,44 +12,54 @@
 
         body {
             background: black;
+            color: #fafafa;
             margin: 0px !important;
         }
 
+        h1,
         h2 {
             color: #fafafa;
             font-family: system-ui;
-            font-size: 18px;
             font-weight: 500;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        .title {
+            padding: 15px 0 2px 0;
+            text-align: center;
+            margin-bottom: -20px;
         }
 
         .title-area {
             display: flex;
             justify-content: space-between;
             position: relative;
+            max-width: 700px;
+            margin: 20px auto 2px auto;
         }
 
-        .shortcut-area {
+        .setting-area {
             padding-left: 10px;
         }
 
-        #reset {
-            font-size: 12px;
-            font-weight: 400;
-            margin: auto 0;
-        }
-
         .card {
-            padding: 12px 18px 18px 18px;
+            padding: 12px 18px;
             background-color: #171b1f;
             border: 1px solid #3e4852;
             border-radius: 5px;
-            color: #fafafa;
             font-family: system-ui;
             max-width: 700px;
-            margin: 20px auto;
+            margin: 0 auto 20px auto;
         }
 
-        .shortcut {
+        .setting {
             display: flex;
             justify-content: space-between;
             padding: 1px;
@@ -58,7 +68,7 @@
             position: relative;
         }
 
-        .shortcut-description {
+        .setting-description {
             margin: auto 0;
         }
 
@@ -104,14 +114,14 @@
             background-color: rgba(0, 0, 0, 0.3);
         }
 
-        .shortcut-text {
+        .btn-text {
             display: inline-block;
             align-items: center;
             vertical-align: middle;
             margin: 6px 10px;
         }
 
-        .hotkeys .shortcut-text {
+        .hotkeys .btn-text {
             margin-right: 0;
         }
 
@@ -122,38 +132,129 @@
         .btn-enter {
             background-color: #00B1E2;
         }
+
+        .reset-area {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            margin-top: 50px;
+            margin-bottom: 100px;
+        }
+
+        .reset {
+            font-size: 12px;
+            font-weight: 400;
+            background-color: rgb(202, 74, 74);
+        }
+
+        .reset:hover {
+            background-color: rgb(148, 54, 54);
+        }
     </style>
 </head>
 
 <body>
+    <div class="title">
+        <h1>Video Speed Options</h1>
+        <hr width="50%">
+    </div>
+
+    <div class="title-area">
+        <h2>Default Settings for Sites</h2>
+    </div>
     <div class="card">
-        <div class="title-area">
-            <h2>Set Keyboard Shortcuts</h2>
-            <div class="btn btn-hov" id="reset">
-                <span class="shortcut-text">
-                    Reset all
+        <div class="setting-area">
+            <div class="setting" id="speed" data-type="site">
+                <span class="setting-description">
+                    Playback Speed
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="layer" data-type="site">
+                <span class="setting-description">
+                    Notification Layer
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="disables" data-type="site">
+                <span class="setting-description">
+                    Active Hotkeys
                 </span>
             </div>
         </div>
-        <div class="shortcut-area">
-            <hr>
-            <div class="shortcut" id="slower">
-                <span class="shortcut-description">
+    </div>
+
+
+    <div class="title-area">
+        <h2>Keyboard Shortcuts</h2>
+    </div>
+    <div class="card">
+        <div class="setting-area">
+            <div class="setting" id="slower" data-type="shortcut">
+                <span class="setting-description">
                     Make the Video Slower
                 </span>
             </div>
             <hr>
-            <div class="shortcut" id="normal">
-                <span class="shortcut-description">
-                    Make the Video Play at the Default Speed
+            <div class="setting" id="normal" data-type="shortcut">
+                <span class="setting-description">
+                    Make the Video Play at the Original Speed
                 </span>
             </div>
             <hr>
-            <div class="shortcut" id="faster">
-                <span class="shortcut-description">
+            <div class="setting" id="faster" data-type="shortcut">
+                <span class="setting-description">
                     Make the Video Faster
                 </span>
             </div>
+        </div>
+    </div>
+
+
+    <div class="title-area">
+        <h2>Notification Styling</h2>
+    </div>
+    <div class="card">
+        <div class="setting-area">
+            <div class="setting" id="position" data-type="notification">
+                <span class="setting-description">
+                    Notification Position
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="bg-color" data-type="notification">
+                <span class="setting-description">
+                    Notification Background Color
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="text-color" data-type="notification">
+                <span class="setting-description">
+                    Notification Text Color
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="title-area">
+        <h2>Popup Theme</h2>
+    </div>
+    <div class="card">
+        <div class="setting-area">
+            <div class="setting" id="theme" data-type="popup">
+                <span class="setting-description">
+                    Light Mode for Popup
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-area">
+        <div class="btn reset">
+            <span class="btn-text">
+                Reset Settings to Defaults
+            </span>
         </div>
     </div>
 

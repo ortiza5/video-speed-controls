@@ -28,7 +28,7 @@ function getSettings(callback) {
 }
 
 function populateFields() {
-  let hotkeyDivs = document.querySelectorAll(".shortcut");
+  let hotkeyDivs = document.querySelectorAll(".setting[data-type='shortcut']");
   hotkeyDivs.forEach((hotkeyDiv) => {
     setHotkeyBtn(hotkeyDiv);
   });
@@ -123,7 +123,7 @@ function setHotkeyBtn(element) {
     el.setAttribute("id", element.id + "-btn");
     el.setAttribute("class", "btn btn-hov");
     el.innerHTML = `
-            <span class="shortcut-text">
+            <span class="btn-text">
                 Click to type a new shortcut
             </span>
         `;
