@@ -17,19 +17,12 @@ var IS_NOTIFICATION_LAYER_MAXED = false;
 // site info
 var DOMAIN = null;
 var SCRIPT_ENABLED = false;
+var OLD_VIDEOS_LENGTH = 0;
 var VIDEOS = new Set();
-
-getSettings();
-
-getSiteSpecificSettings(function () {
-  getVideos();
-  VIDEOS.forEach((video) => {
-    setSpeed(SPEED, video);
-  });
-});
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
+  // OLD_VIDEO_LENGTH = VIDEOS.size;
   getVideos();
   if (VIDEOS.size >= 0) {
     chrome.runtime.sendMessage({
@@ -37,6 +30,26 @@ getSiteSpecificSettings(function () {
       subject: "showPageAction",
     });
     SCRIPT_ENABLED = true;
+    if (VIDEOS.size > OLD_VIDEOS_LENGTH) {
+      OLD_VIDEOS_LENGTH = VIDEOS.size;
+      getSettings("general");
+
+      getSiteSpecificSettings(function () {
+        if (isNaN(SPEED)) {
+          getSettings("site", function () {
+            getVideos();
+            VIDEOS.forEach((video) => {
+              setSpeed(SPEED, video);
+            });
+          });
+        } else {
+          getVideos();
+          VIDEOS.forEach((video) => {
+            setSpeed(SPEED, video);
+          });
+        }
+      });
+    }
     startKeyPressListeners();
   } else {
     SCRIPT_ENABLED = false;
@@ -114,18 +127,21 @@ window.onblur = function () {
   keysDown.clear();
 };
 
-function getSettings(callback) {
+function getSettings(type, callback) {
   chrome.storage.local.get(["extension-settings"], function (result) {
     SETTINGS_FULL = result["extension-settings"];
-    HOTKEY_CODES = SETTINGS_FULL.hotkeys.codes;
-    HOTKEYS_DISABLED = SETTINGS_FULL.hotkeys.disables;
-    SKIP_INC = SETTINGS_FULL.increments.skip;
-    SPEED_INC = SETTINGS_FULL.increments.speed;
-    NOTIFICATION_BACKGROUND = SETTINGS_FULL.notification.background;
-    NOTIFICATION_LAYER = SETTINGS_FULL.notification.layer;
-    NOTIFICATION_POSITION = SETTINGS_FULL.notification.position;
-    NOTIFICATION_TEXT = SETTINGS_FULL.notification.text;
-    SPEED = SETTINGS_FULL.speed;
+    if (type === "general") {
+      HOTKEY_CODES = SETTINGS_FULL.hotkeys.codes;
+      SKIP_INC = SETTINGS_FULL.increments.skip;
+      SPEED_INC = SETTINGS_FULL.increments.speed;
+      NOTIFICATION_BACKGROUND = SETTINGS_FULL.notification.background;
+      NOTIFICATION_POSITION = SETTINGS_FULL.notification.position;
+      NOTIFICATION_TEXT = SETTINGS_FULL.notification.text;
+    } else if (type === "site") {
+      SPEED = SETTINGS_FULL.speed;
+      NOTIFICATION_LAYER = SETTINGS_FULL.notification.layer;
+      HOTKEYS_DISABLED = SETTINGS_FULL.hotkeys.disables;
+    }
 
     if (callback instanceof Function) {
       callback();
@@ -138,13 +154,16 @@ function getSiteSpecificSettings(callback) {
   getDomain();
   let siteSettings = {};
   chrome.storage.local.get([DOMAIN], function (result) {
-    if (!chrome.runtime.error) {
-      siteSettings = result[DOMAIN];
-      console.log(siteSettings);
-      HOTKEYS_DISABLED = siteSettings.disables;
-      NOTIFICATION_LAYER = siteSettings.layer;
-      SPEED = siteSettings.speed;
-    } else {
+    try {
+      if (chrome.runtime.lastError) {
+        console.warn(chrome.runtime.lastError.message);
+      } else {
+        siteSettings = result[DOMAIN];
+        HOTKEYS_DISABLED = siteSettings.disables;
+        NOTIFICATION_LAYER = siteSettings.layer;
+        SPEED = siteSettings.speed;
+      }
+    } catch (err) {
       console.log("No site specific settings");
     }
 
