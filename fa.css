@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'fa';
-  src: url('../font/fa.eot?93799746');
-  src: url('../font/fa.eot?93799746#iefix') format('embedded-opentype'),
-       url('../font/fa.woff2?93799746') format('woff2'),
-       url('../font/fa.woff?93799746') format('woff'),
-       url('../font/fa.ttf?93799746') format('truetype'),
-       url('../font/fa.svg?93799746#fa') format('svg');
+  src: url('../font/fa.eot?1459645');
+  src: url('../font/fa.eot?1459645#iefix') format('embedded-opentype'),
+       url('../font/fa.woff2?1459645') format('woff2'),
+       url('../font/fa.woff?1459645') format('woff'),
+       url('../font/fa.ttf?1459645') format('truetype'),
+       url('../font/fa.svg?1459645#fa') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fa';
-    src: url('../font/fa.svg?93799746#fa') format('svg');
+    src: url('../font/fa.svg?1459645#fa') format('svg');
   }
 }
 */
@@ -55,16 +55,19 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
-.fa-times-circle:before { content: '\e800'; } /* '' */
-.fa-save:before { content: '\e801'; } /* '' */
-.fa-normal:before { content: '\e802'; } /* '' */
-.fa-pause:before { content: '\e803'; } /* '' */
-.fa-skip-f:before { content: '\e804'; } /* '' */
-.fa-skip-b:before { content: '\e805'; } /* '' */
-.fa-faster:before { content: '\e806'; } /* '' */
-.fa-slower:before { content: '\e807'; } /* '' */
-.fa-fullscreen:before { content: '\e808'; } /* '' */
-.fa-layers:before { content: '\e809'; } /* '' */
-.fa-caret-left:before { content: '\e80a'; } /* '' */
-.fa-caret-right:before { content: '\e80b'; } /* '' */
+.fa-normal:before { content: '\e800'; } /* '' */
+.fa-pause:before { content: '\e801'; } /* '' */
+.fa-skip-f:before { content: '\e802'; } /* '' */
+.fa-skip-b:before { content: '\e803'; } /* '' */
+.fa-faster:before { content: '\e804'; } /* '' */
+.fa-slower:before { content: '\e805'; } /* '' */
+.fa-caret-left:before { content: '\e806'; } /* '' */
+.fa-caret-right:before { content: '\e807'; } /* '' */
+.fa-reset:before { content: '\e808'; } /* '' */
+.fa-save:before { content: '\e809'; } /* '' */
+.fa-settings:before { content: '\e80a'; } /* '' */
+.fa-times-circle:before { content: '\e80b'; } /* '' */
+.fa-layers:before { content: '\e80c'; } /* '' */
+.fa-fullscreen:before { content: '\e80d'; } /* '' */
+.fa-info:before { content: '\f086'; } /* '' */
 .fa-tachometer-alt:before { content: '\f0e4'; } /* '' */
