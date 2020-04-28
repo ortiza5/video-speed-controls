@@ -150,6 +150,46 @@
         .reset:hover {
             background-color: rgb(148, 54, 54);
         }
+
+        .fas {
+            font-size: 12px;
+        }
+
+        .info {
+            color: #00B1E2;
+            position: relative;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .info .info-content {
+            visibility: hidden;
+            width: max-content;
+            max-width: 450px;
+            background-color: rgb(44, 44, 44);
+            border: 1px solid rgb(1, 140, 179);
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            font-style: normal;
+
+            /* Positioning the tooltip */
+            position: absolute;
+            z-index: 1;
+            top: -5px;
+            left: 105%;
+        }
+
+        .info-content img {
+            margin-top: 6px;
+            max-width: 432px;
+        }
+
+        /* Show the tooltip when the mouse hovers the tooltip container */
+        .info:hover .info-content {
+            visibility: visible;
+        }
     </style>
 </head>
 
@@ -178,7 +218,7 @@
             <hr>
             <div class="setting" id="disables" data-type="site">
                 <span class="setting-description">
-                    Active Hotkeys
+                    Disabled Hotkeys
                 </span>
             </div>
         </div>
@@ -205,6 +245,24 @@
             <div class="setting" id="faster" data-type="shortcut">
                 <span class="setting-description">
                     Make the Video Faster
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="pause" data-type="shortcut">
+                <span class="setting-description">
+                    Toggle Play/Pause on the Video
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="skip-back" data-type="shortcut">
+                <span class="setting-description">
+                    Skip Back in the Video
+                </span>
+            </div>
+            <hr>
+            <div class="setting" id="skip-forward" data-type="shortcut">
+                <span class="setting-description">
+                    Skip Forward in the Video
                 </span>
             </div>
         </div>
@@ -245,6 +303,13 @@
             <div class="setting" id="theme" data-type="popup">
                 <span class="setting-description">
                     Light Mode for Popup
+                    <i class="fas fa-info info">
+                        <div class="info-content">
+                            Change the colors used in the popup window to better fit light themes. The popup is
+                            accessible only when the active tab's site contains a video.
+                            <img src="img/popups.png" alt="Popup themes">
+                        </div>
+                    </i>
                 </span>
             </div>
         </div>
