@@ -17,12 +17,11 @@ var IS_NOTIFICATION_LAYER_MAXED = false;
 // site info
 var DOMAIN = null;
 var SCRIPT_ENABLED = false;
-var OLD_VIDEOS_LENGTH = 0;
+var OLD_VIDEOS = new Set();
 var VIDEOS = new Set();
 
 // check the page to see if it has a video, enables the pageAction
 (document.body || document.documentElement).addEventListener("transitionend", function () {
-  // OLD_VIDEO_LENGTH = VIDEOS.size;
   getVideos();
   if (VIDEOS.size >= 0) {
     chrome.runtime.sendMessage({
@@ -30,8 +29,8 @@ var VIDEOS = new Set();
       subject: "showPageAction",
     });
     SCRIPT_ENABLED = true;
-    if (VIDEOS.size > OLD_VIDEOS_LENGTH) {
-      OLD_VIDEOS_LENGTH = VIDEOS.size;
+    if (!areSetsEqual(VIDEOS, OLD_VIDEOS)) {
+      OLD_VIDEOS = new Set(VIDEOS);
       getSettings("general");
 
       getSiteSpecificSettings(function () {
@@ -307,6 +306,12 @@ function setArrayMatch(set1, array1) {
     i++;
   }
   // Otherwise, return true
+  return true;
+}
+
+function areSetsEqual(a, b) {
+  if (a.size !== b.size) return false;
+  for (let c of a) if (!b.has(c)) return false;
   return true;
 }
 
