@@ -70,6 +70,7 @@ function updateHotkey(element, newVal) {
   newSettings.hotkeys.codes[parentSection.id] = newVal;
   chrome.storage.local.set({ "extension-settings": newSettings }, function () {
     setHotkeyBtn(parentSection);
+    // TODO: Send message to content scripts that settings updated
   });
 }
 
