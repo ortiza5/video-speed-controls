@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Video Speed Options</title>
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
-    <link rel="stylesheet" href="fa.css">
+    <link rel="stylesheet" href="css/fa.css">
     <style>
         html * {
             box-sizing: border-box;
@@ -89,6 +89,7 @@
             display: inline-block;
             position: relative;
             height: 30px;
+            cursor: pointer;
         }
 
         hr {
@@ -146,8 +147,7 @@
             display: flex;
             justify-content: center;
             position: relative;
-            margin-top: 50px;
-            margin-bottom: 100px;
+            margin: 50px 0;
         }
 
         .reset {
@@ -376,7 +376,7 @@
         <div class="setting-area">
             <div class="setting" id="theme" data-type="popup">
                 <span class="setting-description">
-                    Light Mode for Popup
+                    Choose the Colors for the Popup
                     <i class="fas fa-info info">
                         <div class="info-content">
                             Change the colors used in the popup window to better fit your browser theme. The popup is
@@ -409,15 +409,46 @@
         </div>
     </div>
 
+    <div class="title-area">
+        <h2>Saved Settings for Sites</h2>
+    </div>
+    <div class="card">
+        <div class="setting-area">
+            <div class="setting" id="www.youtube.com">
+                <span class="setting-description">
+                    www.youtube.com
+                </span>
+                <button class="close" title="Delete Site Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                        <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <hr>
+            <div class="setting" id="www.example.com">
+                <span class="setting-description">
+                    www.example.com
+                </span>
+                <button class="close" title="Delete Site Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                        <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="reset-area">
         <div class="btn reset">
             <span class="btn-text">
-                Reset Settings to Defaults
+                Reset All Settings to Defaults
             </span>
         </div>
     </div>
 
-    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="js/options.js"></script>
 </body>
 
 </html>
