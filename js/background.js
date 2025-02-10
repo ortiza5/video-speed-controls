@@ -54,16 +54,11 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.from === "content" && msg.subject === "showPageAction") {
     // Enable the page-action for the requesting tab.
-    chrome.pageAction.show(sender.tab.id);
+    chrome.action.enable(sender.tab.id);
   } else if (msg.from === "content" && msg.subject === "changeIcon") {
     // make icon for the speed
-    let canvas = document.getElementById("icon-making-canvas");
-    if (!canvas) {
-      canvas = document.createElement("CANVAS");
-      canvas.id = "icon-making-canvas";
-      canvas.width = canvas.height = 16;
-    }
-    let ctx = canvas.getContext("2d");
+    const canvas = new OffscreenCanvas(16, 16);
+    const ctx = canvas.getContext("2d");
     ctx.beginPath();
     ctx.rect(0, 0, 16, 16);
     ctx.fillStyle = "red";
@@ -72,12 +67,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    fitTextOnCanvas(ctx, msg.speed, "Roboto Condensed", 9, canvas.width);
+    fitTextOnCanvas(ctx, msg.speed, "Roboto", 9, canvas.width);
 
     let imgData = ctx.getImageData(0, 0, 16, 16);
 
     // set the icon
-    chrome.pageAction.setIcon({ imageData: imgData, tabId: sender.tab.id });
+    chrome.action.setIcon({ imageData: imgData, tabId: sender.tab.id });
   }
   return Promise.resolve("Dummy response to keep the console quiet");
 });
@@ -91,7 +86,7 @@ function fitTextOnCanvas(ctx, text, fontface, yPosition, canvasWidth) {
   // lower the font size until the text fits the canvas
   do {
     fontsize -= 0.25;
-    ctx.font = "bold " + fontsize + "px " + fontface;
+    ctx.font = "1000 " + fontsize + "px " + fontface;
   } while (ctx.measureText(text).width + margin > canvasWidth);
 
   // draw the text
