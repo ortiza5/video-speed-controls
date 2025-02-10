@@ -16,7 +16,7 @@ let VIDEOS = new Set();
 let observerTimeout;
 
 // check the page to see if it has a video, enables the pageAction
-(document.body || document.documentElement).addEventListener("transitionend", () => {
+const triggerVideoCheck = async () => {
   getVideos();
   if (VIDEOS.size >= 0) {
     chrome.runtime.sendMessage({
@@ -26,24 +26,25 @@ let observerTimeout;
     SCRIPT_ENABLED = true;
     if (!areSetsEqual(VIDEOS, OLD_VIDEOS)) {
       OLD_VIDEOS = new Set(VIDEOS);
-      getSettings("general");
+      await getSettings("general");
 
-      getSiteSpecificSettings(() => {
-        if (isNaN(SPEED)) {
-          getSettings("site", () => {
-            applySpeedToVideos();
-          });
-        } else {
-          applySpeedToVideos();
-        }
-      });
+      await getSiteSpecificSettings();
+      if (isNaN(SPEED)) {
+        await getSettings("site");
+      }
+      applySpeedToVideos();
     }
     startKeyPressListeners();
   } else {
     SCRIPT_ENABLED = false;
     removeKeyPressListeners();
   }
-});
+};
+
+(document.body || document.documentElement).addEventListener("transitionend", triggerVideoCheck);
+window.addEventListener("load", triggerVideoCheck);
+window.addEventListener("popstate", triggerVideoCheck);
+document.addEventListener("yt-navigate-start", triggerVideoCheck);
 
 // MutationObserver to monitor changes in the DOM
 const videoOnPageObserver = new MutationObserver((mutations) => {
@@ -56,12 +57,12 @@ const videoOnPageObserver = new MutationObserver((mutations) => {
       }
     });
     if (videoChanged) {
-      applySpeedToVideos();
+      triggerVideoCheck();
     }
   }, 100);
 });
 
-// Start observing the document for changes
+// Start observing the page for new videos
 videoOnPageObserver.observe(document.body || document.documentElement, {
   childList: true,
   subtree: true,
@@ -70,7 +71,7 @@ videoOnPageObserver.observe(document.body || document.documentElement, {
 });
 
 // listen for requests from the popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.from === "popup" && SCRIPT_ENABLED) {
     handlePopupRequest(request, sendResponse);
   }
@@ -141,48 +142,53 @@ window.onblur = () => {
 };
 
 // Get settings from storage
-const getSettings = (type, callback) => {
-  chrome.storage.local.get(["extension-settings"], (result) => {
-    SETTINGS = result["extension-settings"];
-    if (type === "site") {
-      SPEED = SETTINGS.speed;
-      NOTIFICATION_LAYER = SETTINGS.notification.layer;
-      HOTKEYS_DISABLED = SETTINGS.hotkeys.disables;
-    }
+const getSettings = async (type, callback) => {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["extension-settings"], (result) => {
+      SETTINGS = result["extension-settings"];
+      if (type === "site") {
+        SPEED = SETTINGS.speed;
+        NOTIFICATION_LAYER = SETTINGS.notification.layer;
+        HOTKEYS_DISABLED = SETTINGS.hotkeys.disables;
+      }
 
-    if (callback instanceof Function) {
-      callback();
-    }
-    return SETTINGS;
+      if (callback instanceof Function) {
+        callback();
+      }
+      resolve(SETTINGS);
+    });
   });
 };
 
 // Get site-specific settings from storage
-const getSiteSpecificSettings = (callback) => {
-  getDomain();
-  chrome.storage.local.get([DOMAIN], (result) => {
-    try {
-      if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError.message);
-      } else {
-        const siteSettings = result[DOMAIN];
-        HOTKEYS_DISABLED = siteSettings.disables;
-        NOTIFICATION_LAYER = siteSettings.layer;
-        SPEED = siteSettings.speed;
+const getSiteSpecificSettings = async (callback) => {
+  return new Promise((resolve) => {
+    getDomain();
+    chrome.storage.local.get([DOMAIN], (result) => {
+      try {
+        if (chrome.runtime.lastError) {
+          console.warn(chrome.runtime.lastError.message);
+        } else {
+          const siteSettings = result[DOMAIN];
+          HOTKEYS_DISABLED = siteSettings.disables;
+          NOTIFICATION_LAYER = siteSettings.layer;
+          SPEED = siteSettings.speed;
+        }
+      } catch (err) {
+        console.log("No site specific settings");
       }
-    } catch (err) {
-      console.log("No site specific settings");
-    }
 
-    if (callback instanceof Function) {
-      callback();
-    }
+      if (callback instanceof Function) {
+        callback();
+      }
+      resolve();
+    });
   });
 };
 
 // Get all video elements on the page
 const getVideos = () => {
-  const new_videos = document.getElementsByTagName("video");
+  const new_videos = document.querySelectorAll("video");
   if (new_videos.length >= 1) {
     VIDEOS = new Set(new_videos);
   } else {
@@ -278,7 +284,9 @@ const skipBackward = (video) => {
 // Show a temporary alert
 const tempAlert = (msg, duration, insertAfter) => {
   // remove any old notification first
-  const element = document.getElementById("speed-notification123");
+  const videoId = insertAfter.src ? insertAfter.src.replace(/[^a-zA-Z0-9]/g, "") : Math.random().toString(36).substr(2, 9);
+  const elementId = `speed-notification-${videoId}`;
+  const element = document.getElementById(elementId);
   if (element && element.parentNode) {
     element.parentNode.removeChild(element);
   }
@@ -298,7 +306,7 @@ const tempAlert = (msg, duration, insertAfter) => {
      z-index: 9999;
      `
   );
-  el.setAttribute("id", "speed-notification123");
+  el.setAttribute("id", elementId);
   el.innerHTML = msg;
   // go up the specified number of parents
   let count = 0;
