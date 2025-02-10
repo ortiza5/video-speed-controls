@@ -79,7 +79,8 @@ function updateHotkey(element, newVal) {
   newSettings.hotkeys.codes[parentSection.id] = newVal;
   chrome.storage.local.set({ "extension-settings": newSettings }, () => {
     setHotkeyBtn(parentSection);
-    // TODO: Send message to content scripts that settings updated
+    showNotification("Saved");
+    notifyContentScripts();
   });
 }
 
@@ -193,6 +194,7 @@ function resetSettings() {
 
     chrome.storage.local.set({ "extension-settings": defaultSettings }, () => {
       alert("Settings have been reset to defaults.");
+      notifyContentScripts();
       location.reload();
     });
   }
@@ -213,11 +215,20 @@ function showNotification(message) {
   }, 3000);
 }
 
+function notifyContentScripts() {
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach((tab) => {
+      chrome.tabs.sendMessage(tab.id, { from: "options", subject: "settingsUpdated" });
+    });
+  });
+}
+
 // Event Listeners
 document.getElementById("playback-speed").addEventListener("change", function () {
   SETTINGS_FULL.speed = parseFloat(this.value);
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -225,6 +236,7 @@ document.getElementById("notification-layer").addEventListener("change", functio
   SETTINGS_FULL.notification.layer = parseInt(this.value);
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -232,6 +244,7 @@ document.getElementById("disable-slower").addEventListener("change", function ()
   SETTINGS_FULL.hotkeys.disables.slower = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -239,6 +252,7 @@ document.getElementById("disable-normal").addEventListener("change", function ()
   SETTINGS_FULL.hotkeys.disables.normal = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -246,6 +260,7 @@ document.getElementById("disable-faster").addEventListener("change", function ()
   SETTINGS_FULL.hotkeys.disables.faster = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -253,6 +268,7 @@ document.getElementById("disable-pause").addEventListener("change", function () 
   SETTINGS_FULL.hotkeys.disables.pause = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -260,6 +276,7 @@ document.getElementById("disable-skip-back").addEventListener("change", function
   SETTINGS_FULL.hotkeys.disables["skip-back"] = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -267,6 +284,7 @@ document.getElementById("disable-skip-forward").addEventListener("change", funct
   SETTINGS_FULL.hotkeys.disables["skip-forward"] = this.checked;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -278,6 +296,7 @@ document.getElementById("speed-down").addEventListener("click", function () {
     SETTINGS_FULL.speed = newValue;
     chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
       showNotification("Saved");
+      notifyContentScripts();
     });
   }
 });
@@ -290,6 +309,7 @@ document.getElementById("speed-up").addEventListener("click", function () {
     SETTINGS_FULL.speed = newValue;
     chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
       showNotification("Saved");
+      notifyContentScripts();
     });
   }
 });
@@ -302,6 +322,7 @@ document.getElementById("layer-down").addEventListener("click", function () {
     SETTINGS_FULL.notification.layer = newValue;
     chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
       showNotification("Saved");
+      notifyContentScripts();
     });
   }
 });
@@ -313,6 +334,7 @@ document.getElementById("layer-up").addEventListener("click", function () {
   SETTINGS_FULL.notification.layer = newValue;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -320,6 +342,7 @@ document.getElementById("notification-position").addEventListener("change", func
   SETTINGS_FULL.notification.position = this.value;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -327,6 +350,7 @@ document.getElementById("notification-bg-color").addEventListener("change", func
   SETTINGS_FULL.notification.background = this.value;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 
@@ -334,6 +358,7 @@ document.getElementById("notification-text-color").addEventListener("change", fu
   SETTINGS_FULL.notification.text = this.value;
   chrome.storage.local.set({ "extension-settings": SETTINGS_FULL }, () => {
     showNotification("Saved");
+    notifyContentScripts();
   });
 });
 

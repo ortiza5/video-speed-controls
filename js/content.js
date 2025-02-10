@@ -75,6 +75,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.from === "popup" && SCRIPT_ENABLED) {
     handlePopupRequest(request, sendResponse);
   }
+  if (request.from === "options" && request.subject === "settingsUpdated") {
+    await getSettings("general");
+    applySpeedToVideos();
+  }
 });
 
 // Handle requests from the popup
