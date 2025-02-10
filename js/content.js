@@ -250,7 +250,17 @@ function tempAlert(msg, duration, insertAfter) {
   let el = document.createElement("div");
   el.setAttribute(
     "style",
-    "background:#d90e00;position:absolute;top:0px;left:0%;padding:5px 16px;color:#fff;box-shadow:0px 0px 3px rgba(0,0,0,0.07);opacity: 0.9;transition: opacity 500ms ease;z-index: 9999;"
+    `background: ${SETTINGS.notification.background};
+     position: absolute;
+     top: 0px;
+     ${SETTINGS.notification.position === "left" ? "left: 0;" : "right: 0;"}
+     padding: 5px 16px;
+     color: ${SETTINGS.notification.text};
+     box-shadow: 0px 0px 3px rgba(0,0,0,0.07);
+     opacity: 0.9;
+     transition: opacity 500ms ease;
+     z-index: 9999;
+     `
   );
   el.setAttribute("id", "speed-notification123");
   el.innerHTML = msg;
