@@ -2,453 +2,681 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Video Speed Options</title>
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
-    <link rel="stylesheet" href="css/fa.css">
-    <style>
-        html * {
-            box-sizing: border-box;
-        }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Video Speed Options</title>
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
+  <link rel="stylesheet" href="css/fa.css">
+  <style>
+    html * {
+      box-sizing: border-box;
+    }
 
-        body {
-            background: black;
-            color: #fafafa;
-            margin: 0px !important;
-        }
+    body {
+      background: black;
+      color: #fafafa;
+      margin: 0px !important;
+    }
 
-        @media only screen and (max-width: 730px) {
-            body {
-                padding: 10px;
-            }
-        }
+    @media only screen and (max-width: 730px) {
+      body {
+        padding: 10px;
+      }
+    }
 
-        h1,
-        h2 {
-            color: #fafafa;
-            font-family: system-ui;
-            font-weight: 500;
-        }
+    h1,
+    h2 {
+      color: #fafafa;
+      font-family: system-ui;
+      font-weight: 500;
+    }
 
-        h1 {
-            font-size: 30px;
-        }
+    h1 {
+      font-size: 30px;
+    }
 
-        h2 {
-            font-size: 18px;
-        }
+    h2 {
+      font-size: 18px;
+    }
 
-        .title {
-            padding: 15px 0 2px 0;
-            text-align: center;
-            margin-bottom: -20px;
-        }
+    .title {
+      padding: 15px 0 2px 0;
+      text-align: center;
+      margin-bottom: -20px;
+    }
 
-        .title-area {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            max-width: 700px;
-            margin: 20px auto 2px auto;
-        }
+    .title-area {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      max-width: 700px;
+      margin: 20px auto 2px auto;
+    }
 
-        .setting-area {
-            padding-left: 10px;
-        }
+    .setting-area {
+      padding-left: 10px;
+    }
 
-        .card {
-            padding: 12px 18px;
-            background-color: #171b1f;
-            border: 1px solid #3e4852;
-            border-radius: 5px;
-            font-family: system-ui;
-            max-width: 700px;
-            margin: 0 auto 20px auto;
-        }
+    .card {
+      padding: 12px 18px;
+      background-color: #171b1f;
+      border: 1px solid #3e4852;
+      border-radius: 5px;
+      font-family: system-ui;
+      max-width: 700px;
+      margin: 0 auto 20px auto;
+    }
 
-        .setting {
-            display: flex;
-            justify-content: space-between;
-            padding: 1px;
-            font-size: 12px;
-            font-weight: 400;
-            position: relative;
-            flex-wrap: wrap;
-        }
+    .setting {
+      display: flex;
+      justify-content: space-between;
+      padding: 1px;
+      font-size: 12px;
+      font-weight: 400;
+      position: relative;
+      flex-wrap: wrap;
+    }
 
-        .setting-description {
-            margin: auto 0;
-        }
+    .setting-description {
+      margin: auto 0;
+    }
 
-        .btn {
-            background-color: rgb(42, 52, 61);
-            border: 1px solid #3e4852;
-            border-radius: 3px;
-            box-sizing: border-box;
-            display: inline-block;
-            position: relative;
-            height: 30px;
-            cursor: pointer;
-        }
+    .btn {
+      background-color: rgb(42, 52, 61);
+      border: 1px solid #3e4852;
+      border-radius: 3px;
+      box-sizing: border-box;
+      display: inline-block;
+      position: relative;
+      height: 30px;
+      cursor: pointer;
+    }
 
-        hr {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            border: 0;
-            border-top: 1px solid #3e4852;
-            box-sizing: content-box;
-            height: 0;
-            overflow: visible;
-        }
+    hr {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      border: 0;
+      border-top: 1px solid #3e4852;
+      box-sizing: content-box;
+      height: 0;
+      overflow: visible;
+    }
 
-        .close {
-            margin: 6px 3px;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            display: inline-block;
-            vertical-align: middle;
-            animation: pop 16ms linear;
-            width: 18px;
-            height: 18px;
-            border-radius: 1px;
-            background-color: rgba(0, 0, 0, 0);
-            opacity: 1;
-            border: 0;
-            padding: 0;
-            fill: #fafafa;
-        }
+    .close-btn {
+      margin: 6px 3px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: inline-block;
+      vertical-align: middle;
+      animation: pop 16ms linear;
+      width: 18px;
+      height: 18px;
+      border-radius: 1px;
+      background-color: rgba(0, 0, 0, 0);
+      opacity: 1;
+      border: 0;
+      padding: 0;
+      fill: #fafafa;
+    }
 
 
-        .close:hover {
-            fill: red;
-            background-color: rgba(0, 0, 0, 0.3);
-        }
+    .close-btn:hover {
+      fill: red;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
 
-        .btn-text {
-            display: inline-block;
-            align-items: center;
-            vertical-align: middle;
-            margin: 6px 10px;
-        }
+    .btn-text {
+      display: inline-block;
+      align-items: center;
+      vertical-align: middle;
+      margin: 6px 10px;
+    }
 
-        .hotkeys .btn-text {
-            margin-right: 0;
-        }
+    .hotkeys .btn-text {
+      margin-right: 0;
+    }
 
-        .btn-hov:hover {
-            background-color: #3e4852;
-        }
+    .btn-hov:hover {
+      background-color: #3e4852;
+    }
 
-        .btn-enter {
-            background-color: #00B1E2;
-        }
+    .btn-enter {
+      background-color: #00B1E2;
+    }
 
-        .reset-area {
-            display: flex;
-            justify-content: center;
-            position: relative;
-            margin: 50px 0;
-        }
+    .reset-area {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      margin: 50px 0;
+    }
 
-        .reset {
-            font-size: 12px;
-            font-weight: 400;
-            background-color: rgb(202, 74, 74);
-        }
+    .reset-btn {
+      font-size: 12px;
+      font-weight: 400;
+      background-color: rgb(202, 74, 74);
+    }
 
-        .reset:hover {
-            background-color: rgb(148, 54, 54);
-        }
+    .reset-btn:hover {
+      background-color: rgb(148, 54, 54);
+    }
 
-        .fas {
-            font-size: 12px;
-        }
+    .fas {
+      font-size: 12px;
+    }
 
-        .info {
-            color: #00B1E2;
-            position: relative;
-            display: inline-block;
-            margin-left: 4px;
-        }
+    .info {
+      color: #00B1E2;
+      position: relative;
+      display: inline-block;
+      margin-left: 4px;
+    }
 
-        .info .info-content {
-            visibility: hidden;
-            width: max-content;
-            max-width: 450px;
-            background-color: rgb(44, 44, 44);
-            border: 1px solid rgb(1, 140, 179);
-            color: #fff;
-            padding: 5px 8px;
-            border-radius: 6px;
-            display: inline-block;
-            font-style: normal;
+    .info .info-content {
+      visibility: hidden;
+      width: max-content;
+      max-width: 450px;
+      background-color: rgb(44, 44, 44);
+      border: 1px solid rgb(1, 140, 179);
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      font-style: normal;
 
-            /* Positioning the tooltip */
-            position: absolute;
-            z-index: 1;
-            top: -5px;
-            left: 105%;
-        }
+      /* Positioning the tooltip */
+      position: absolute;
+      z-index: 1;
+      top: -5px;
+      left: 105%;
+    }
 
-        .info-content img {
-            margin-top: 6px;
-            max-width: 432px;
-        }
+    .info-content img {
+      margin-top: 6px;
+      max-width: 432px;
+    }
 
-        /* Show the tooltip when the mouse hovers the tooltip container */
-        .info:hover .info-content {
-            visibility: visible;
-        }
+    /* Show the tooltip when the mouse hovers the tooltip container */
+    .info:hover .info-content {
+      visibility: visible;
+    }
 
-        .options-container {
-            margin: 30px 0 15px 0;
-            width: 100%;
-            text-align: center;
-        }
+    .options-container {
+      margin: 30px 0 15px 0;
+      width: 100%;
+      text-align: center;
+    }
 
-        .options-container input[type="radio"] {
-            position: absolute;
-            clip: rect(0, 0, 0, 0);
-            pointer-events: none;
-        }
+    .options-container input[type="radio"] {
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+      pointer-events: none;
+    }
 
-        .options-container .theme-option {
-            display: inline-block;
-            margin: 0 30px;
-        }
+    .options-container .theme-option {
+      display: inline-block;
+      margin: 0 30px;
+    }
 
-        .options-container .theme-option:hover {
-            transition: 300ms;
-            transform: scaleX(1.01) scaleY(1.01);
-            filter: none;
-        }
+    .options-container .theme-option:hover {
+      transition: 300ms;
+      transform: scaleX(1.01) scaleY(1.01);
+      filter: none;
+    }
 
-        .theme-option .theme-image img {
-            transition: 300ms;
-            filter: grayscale(0.1) opacity(.5);
-        }
+    .theme-option .theme-image img {
+      transition: 300ms;
+      filter: grayscale(0.1) opacity(.5);
+    }
 
-        .theme-option:hover .theme-image img {
-            filter: none;
-        }
+    .theme-option:hover .theme-image img {
+      filter: none;
+    }
 
-        .options-container img {
-            height: 200px;
-            border-radius: 8px;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
-        }
+    .options-container img {
+      height: 200px;
+      border-radius: 8px;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+    }
 
-        .options-container .theme-image {
-            margin-bottom: 10px;
-        }
+    .options-container .theme-image {
+      margin-bottom: 10px;
+    }
 
-        .options-container .theme-text {
-            padding: 3px 12px;
-            border-radius: 12px;
-            border-width: 0;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
+    .options-container .theme-text {
+      padding: 3px 12px;
+      border-radius: 12px;
+      border-width: 0;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
 
-        .theme-option input:checked+label .theme-image img {
-            box-shadow: 0 0 3px 5px #00B1E2;
-            filter: none;
-        }
+    .theme-option input:checked+label .theme-image img {
+      box-shadow: 0 0 3px 5px #00B1E2;
+      filter: none;
+    }
 
-        .theme-option input:checked+label .theme-text {
-            background-color: #00B1E2;
-        }
+    .theme-option input:checked+label .theme-text {
+      background-color: #00B1E2;
+    }
 
-        @media only screen and (max-width: 570px) {
-            .theme-option {
-                margin-bottom: 10px !important;
-            }
-        }
-    </style>
+    @media only screen and (max-width: 570px) {
+      .theme-option {
+        margin-bottom: 10px !important;
+      }
+    }
+
+    select,
+    input[type="color"] {
+      background-color: #171b1f;
+      border: 1px solid #3e4852;
+      border-radius: 3px;
+      color: #fafafa;
+      padding: 5px;
+      font-family: system-ui;
+      font-size: 12px;
+    }
+
+    select:hover,
+    input[type="color"]:hover {
+      background-color: #3e4852;
+    }
+
+    select:focus,
+    input[type="color"]:focus {
+      outline: none;
+      border-color: #00B1E2;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-group input {
+      background-color: #171b1f;
+      border: 1px solid #3e4852;
+      border-radius: 3px;
+      color: #fafafa;
+      padding: 5px;
+      font-family: system-ui;
+      font-size: 12px;
+      text-align: center;
+      width: 50px;
+      margin: 0 5px;
+    }
+
+    .input-group button {
+      background-color: #2a343d;
+      border: 1px solid #3e4852;
+      border-radius: 3px;
+      color: #fafafa;
+      padding: 5px;
+      font-family: system-ui;
+      font-size: 12px;
+      cursor: pointer;
+      width: 30px;
+    }
+
+    .input-group button:hover,
+    .input-group button:active {
+      background-color: #00B1E2;
+      outline: none;
+      border-color: #00B1E2;
+    }
+
+    /* Hide the up and down arrows in number inputs */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .hotkeys-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .hotkeys-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+      column-gap: 10px;
+    }
+
+    .hotkeys-list hr {
+      width: 95%;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      border: 0;
+      border-top: 1px solid #3e4852;
+      box-sizing: content-box;
+      height: 0;
+      overflow: visible;
+    }
+
+    .hotkeys-row div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 30%;
+    }
+
+    .hotkeys-row span {
+      text-align: right;
+      margin-right: 10px;
+    }
+
+    .hotkeys-list input[type="checkbox"] {
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+      pointer-events: none;
+    }
+
+    .hotkeys-list input[type="checkbox"]+label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background-color: #2a343d;
+      border: 1px solid #3e4852;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .hotkeys-list input[type="checkbox"]:checked+label {
+      background-color: #00B1E2;
+    }
+
+    .hotkeys-list label i {
+      color: #fafafa;
+    }
+
+    .hotkeys-list label:hover {
+      background-color: #3e4852;
+    }
+
+    .notification {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #00B1E2;
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      animation: pulse 1s ease-in-out 1, fadeOut 1s 1s forwards;
+    }
+
+    .notification svg {
+      margin-right: 10px;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="title">
-        <h1>Video Speed Options</h1>
-        <hr width="50%">
-    </div>
+  <div class="title">
+    <h1>Video Speed Options</h1>
+    <hr width="50%">
+  </div>
 
-    <div class="title-area">
-        <h2>Default Settings for Sites</h2>
-    </div>
-    <div class="card">
-        <div class="setting-area">
-            <div class="setting" id="speed" data-type="site">
-                <span class="setting-description">
-                    Playback Speed
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="layer" data-type="site">
-                <span class="setting-description">
-                    Notification Layer
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="disables" data-type="site">
-                <span class="setting-description">
-                    Disabled Hotkeys
-                </span>
-            </div>
+  <div class="title-area">
+    <h2>Default Settings for Sites</h2>
+  </div>
+  <div class="card">
+    <div class="setting-area">
+      <div class="setting" id="speed" data-type="site">
+        <span class="setting-description">
+          Playback Speed
+        </span>
+        <div class="input-group">
+          <button type="button" id="speed-down">-</button>
+          <input type="number" id="playback-speed" step="0.25" min="0.25" max="16" value="1.75">
+          <button type="button" id="speed-up">+</button>
         </div>
-    </div>
-
-
-    <div class="title-area">
-        <h2>Keyboard Shortcuts</h2>
-    </div>
-    <div class="card">
-        <div class="setting-area">
-            <div class="setting" id="slower" data-type="shortcut">
-                <span class="setting-description">
-                    Make the Video Slower
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="normal" data-type="shortcut">
-                <span class="setting-description">
-                    Make the Video Play at the Original Speed
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="faster" data-type="shortcut">
-                <span class="setting-description">
-                    Make the Video Faster
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="pause" data-type="shortcut">
-                <span class="setting-description">
-                    Toggle Play/Pause on the Video
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="skip-back" data-type="shortcut">
-                <span class="setting-description">
-                    Skip Back in the Video
-                </span>
-            </div>
-            <hr>
-            <div class="setting" id="skip-forward" data-type="shortcut">
-                <span class="setting-description">
-                    Skip Forward in the Video
-                </span>
-            </div>
+      </div>
+      <hr>
+      <div class="setting" id="layer" data-type="site">
+        <span class="setting-description">
+          Notification Layer
+        </span>
+        <div class="input-group">
+          <button type="button" id="layer-down">-</button>
+          <input type="number" id="notification-layer" step="1" min="0" value="0">
+          <button type="button" id="layer-up">+</button>
         </div>
-    </div>
-
-
-    <div class="title-area">
-        <h2>Notification Styling</h2>
-    </div>
-    <div class="card">
-        <div class="setting-area">
-            <div class="setting" id="position" data-type="notification">
-                <span class="setting-description">
-                    Notification Position
-                </span>
+      </div>
+      <hr>
+      <div class="setting" id="disables" data-type="site">
+        <span class="setting-description">
+          Disabled Hotkeys
+        </span>
+        <div class="hotkeys-list">
+          <div class="hotkeys-row">
+            <div>
+              <span>Decrease Speed</span>
+              <input type="checkbox" id="disable-slower">
+              <label for="disable-slower"><i class="fas fa-slower"></i></label>
             </div>
-            <hr>
-            <div class="setting" id="bg-color" data-type="notification">
-                <span class="setting-description">
-                    Notification Background Color
-                </span>
+            <div>
+              <span>Normal Speed</span>
+              <input type="checkbox" id="disable-normal">
+              <label for="disable-normal"><i class="fas fa-normal"></i></label>
             </div>
-            <hr>
-            <div class="setting" id="text-color" data-type="notification">
-                <span class="setting-description">
-                    Notification Text Color
-                </span>
+            <div>
+              <span>Increase Speed</span>
+              <input type="checkbox" id="disable-faster">
+              <label for="disable-faster"><i class="fas fa-faster"></i></label>
             </div>
+          </div>
+          <hr>
+          <div class="hotkeys-row">
+            <div>
+              <span>Skip Back</span>
+              <input type="checkbox" id="disable-skip-back">
+              <label for="disable-skip-back"><i class="fas fa-skip-b"></i></label>
+            </div>
+            <div>
+              <span>Play/Pause</span>
+              <input type="checkbox" id="disable-pause">
+              <label for="disable-pause"><i class="fas fa-pause"></i></label>
+            </div>
+            <div>
+              <span>Skip Forward</span>
+              <input type="checkbox" id="disable-skip-forward">
+              <label for="disable-skip-forward"><i class="fas fa-skip-f"></i></label>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
 
-    <div class="title-area">
-        <h2>Popup Theme</h2>
+  <div class="title-area">
+    <h2>Keyboard Shortcuts</h2>
+  </div>
+  <div class="card">
+    <div class="setting-area">
+      <div class="setting" id="slower" data-type="shortcut">
+        <span class="setting-description">
+          Make the Video Slower
+        </span>
+      </div>
+      <hr>
+      <div class="setting" id="normal" data-type="shortcut">
+        <span class="setting-description">
+          Make the Video Play at the Original Speed
+        </span>
+      </div>
+      <hr>
+      <div class="setting" id="faster" data-type="shortcut">
+        <span class="setting-description">
+          Make the Video Faster
+        </span>
+      </div>
+      <hr>
+      <div class="setting" id="pause" data-type="shortcut">
+        <span class="setting-description">
+          Toggle Play/Pause on the Video
+        </span>
+      </div>
+      <hr>
+      <div class="setting" id="skip-back" data-type="shortcut">
+        <span class="setting-description">
+          Skip Back in the Video
+        </span>
+      </div>
+      <hr>
+      <div class="setting" id="skip-forward" data-type="shortcut">
+        <span class="setting-description">
+          Skip Forward in the Video
+        </span>
+      </div>
     </div>
-    <div class="card">
-        <div class="setting-area">
-            <div class="setting" id="theme" data-type="popup">
-                <span class="setting-description">
-                    Choose the Colors for the Popup
-                    <i class="fas fa-info info">
-                        <div class="info-content">
-                            Change the colors used in the popup window to better fit your browser theme. The popup is
-                            only accessible when the active tab's site contains a video.
-                        </div>
-                    </i>
-                </span>
-                <!-- <div class="break"></div> -->
-                <div class="options-container">
-                    <div class="theme-option">
-                        <input checked="checked" id="popup-dark" type="radio" name="popup-theme" />
-                        <label for="popup-dark">
-                            <div class="theme-image">
-                                <img src="img/popup-dark.png" alt="Popup Dark Theme">
-                            </div>
-                            <span class="theme-text">Dark Theme</span>
-                        </label>
-                    </div>
-                    <div class="theme-option">
-                        <input id="popup-light" type="radio" name="popup-theme" />
-                        <label for="popup-light">
-                            <div class="theme-image">
-                                <img src="img/popup-light.png" alt="Popup Light Theme">
-                            </div>
-                            <span class="theme-text">Light Theme</span>
-                        </label>
-                    </div>
-                </div>
+  </div>
+
+
+  <div class="title-area">
+    <h2>Notification Styling</h2>
+  </div>
+  <div class="card">
+    <div class="setting-area">
+      <div class="setting" id="position" data-type="notification">
+        <span class="setting-description">
+          Notification Position
+        </span>
+        <select id="notification-position">
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+        </select>
+      </div>
+      <hr>
+      <div class="setting" id="bg-color" data-type="notification">
+        <span class="setting-description">
+          Notification Background Color
+        </span>
+        <input type="color" id="notification-bg-color" value="#d90e00">
+      </div>
+      <hr>
+      <div class="setting" id="text-color" data-type="notification">
+        <span class="setting-description">
+          Notification Text Color
+        </span>
+        <input type="color" id="notification-text-color" value="#ffffff">
+      </div>
+    </div>
+  </div>
+
+
+  <div class="title-area">
+    <h2>Popup Theme</h2>
+  </div>
+  <div class="card">
+    <div class="setting-area">
+      <div class="setting" id="theme" data-type="popup">
+        <span class="setting-description">
+          Choose the Colors for the Popup
+          <i class="fas fa-info info">
+            <div class="info-content">
+              Change the colors used in the popup window to better fit your browser theme. The popup is
+              only accessible when the active tab's site contains a video.
             </div>
+          </i>
+        </span>
+        <!-- <div class="break"></div> -->
+        <div class="options-container">
+          <div class="theme-option">
+            <input checked="checked" id="popup-dark" type="radio" name="popup-theme" />
+            <label for="popup-dark">
+              <div class="theme-image">
+                <img src="img/popup-dark.png" alt="Popup Dark Theme">
+              </div>
+              <span class="theme-text">Dark Theme</span>
+            </label>
+          </div>
+          <div class="theme-option">
+            <input id="popup-light" type="radio" name="popup-theme" />
+            <label for="popup-light">
+              <div class="theme-image">
+                <img src="img/popup-light.png" alt="Popup Light Theme">
+              </div>
+              <span class="theme-text">Light Theme</span>
+            </label>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="title-area">
-        <h2>Saved Settings for Sites</h2>
+  <div class="title-area">
+    <h2>Saved Settings for Sites</h2>
+  </div>
+  <div class="card">
+    <div class="setting-area">
+      <div class="setting" id="www.youtube.com">
+        <span class="setting-description">
+          www.youtube.com
+        </span>
+        <button class="close-btn" title="Delete Site Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
+            </path>
+          </svg>
+        </button>
+      </div>
+      <hr>
+      <div class="setting" id="www.example.com">
+        <span class="setting-description">
+          www.example.com
+        </span>
+        <button class="close-btn" title="Delete Site Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
+            </path>
+          </svg>
+        </button>
+      </div>
     </div>
-    <div class="card">
-        <div class="setting-area">
-            <div class="setting" id="www.youtube.com">
-                <span class="setting-description">
-                    www.youtube.com
-                </span>
-                <button class="close" title="Delete Site Settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-                        <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-            <hr>
-            <div class="setting" id="www.example.com">
-                <span class="setting-description">
-                    www.example.com
-                </span>
-                <button class="close" title="Delete Site Settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-                        <path d="M13.5 6l-1.4-1.4-3.1 3-3.1-3L4.5 6l3.1 3.1-3 2.9 1.5 1.4L9 10.5l2.9 2.9 1.5-1.4-3-2.9">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
+  </div>
 
-    <div class="reset-area">
-        <div class="btn reset">
-            <span class="btn-text">
-                Reset All Settings to Defaults
-            </span>
-        </div>
+  <div class="reset-area">
+    <div class="btn reset-btn">
+      <span class="btn-text">
+        Reset All Settings to Defaults
+      </span>
     </div>
+  </div>
 
-    <script type="text/javascript" src="js/options.js"></script>
+  <script type="text/javascript" src="js/options.js"></script>
 </body>
 
 </html>

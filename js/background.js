@@ -26,9 +26,10 @@ chrome.runtime.onInstalled.addListener(function () {
       background: "#d90e00",
       layer: 0,
       position: "right",
-      text: "#fff",
+      text: "#ffffff",
     },
     speed: 1.75,
+    theme: "dark",
   };
 
   let youtube = {
