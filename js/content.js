@@ -45,6 +45,30 @@ let observerTimeout;
   }
 });
 
+// MutationObserver to monitor changes in the DOM
+const videoOnPageObserver = new MutationObserver((mutations) => {
+  clearTimeout(observerTimeout);
+  observerTimeout = setTimeout(() => {
+    let videoChanged = false;
+    mutations.forEach((mutation) => {
+      if (mutation.type === "childList" || mutation.type === "attributes") {
+        videoChanged = true;
+      }
+    });
+    if (videoChanged) {
+      applySpeedToVideos();
+    }
+  }, 100);
+});
+
+// Start observing the document for changes
+videoOnPageObserver.observe(document.body || document.documentElement, {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ["src", "currentSrc"],
+});
+
 // listen for requests from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.from === "popup" && SCRIPT_ENABLED) {
@@ -360,4 +384,5 @@ const startKeyPressListeners = () => {
 const removeKeyPressListeners = () => {
   window.removeEventListener("keydown", keyPress);
   window.removeEventListener("keyup", keyRelease);
+  videoOnPageObserver.disconnect();
 };
