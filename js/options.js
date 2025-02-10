@@ -47,7 +47,7 @@ function enterNewHotkey(event) {
     }
     keysDown.add(e.key.toLowerCase(), keysDown.size);
     console.log(keysDown);
-    textArea.innerHTML = formateHotkeys(keysDown);
+    textArea.innerHTML = formatHotkeys(keysDown);
     keysFinal = new Set(keysDown);
   }
   function keyRelease(e) {
@@ -74,7 +74,7 @@ function updateHotkey(element, newVal) {
   });
 }
 
-function formateHotkeys(set1) {
+function formatHotkeys(set1) {
   let replaceTable = {
     Control: "Ctrl",
     Arrowup: "&uarr;",
@@ -88,12 +88,9 @@ function formateHotkeys(set1) {
   };
 
   let keyString = [...set1].map((c) => c.slice(0, 1).toUpperCase() + c.slice(1).toLowerCase()).join(" + ");
-  keyString = keyString.replace(
-    /Control|Arrowup|Arrowright|Arrowdown|Arrowleft|\s\s|Pageup|Pagedown|Delete/g,
-    function (match) {
-      return replaceTable[match];
-    }
-  );
+  keyString = keyString.replace(/Control|Arrowup|Arrowright|Arrowdown|Arrowleft|\s\s|Pageup|Pagedown|Delete/g, function (match) {
+    return replaceTable[match];
+  });
   keyString = keyString === " " ? "Space" : keyString;
 
   return keyString;
@@ -115,7 +112,7 @@ function setHotkeyBtn(element) {
     el.setAttribute("class", "btn hotkeys");
     el.innerHTML = `
       <span class="btn-text">
-            ${formateHotkeys(new Set(HOTKEY_CODES[element.id]))}
+            ${formatHotkeys(new Set(HOTKEY_CODES[element.id]))}
       </span>
       <button class="close" title="Delete shortcut">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
