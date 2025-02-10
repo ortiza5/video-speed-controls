@@ -2,9 +2,9 @@ chrome.runtime.onInstalled.addListener(function () {
   let settings = {
     hotkeys: {
       codes: {
-        slower: ["F21"],
-        normal: ["F22"],
-        faster: ["F23"],
+        slower: ["F20"],
+        normal: ["F21"],
+        faster: ["F22"],
         pause: ["k"],
         "skip-back": ["ArrowLeft"],
         "skip-forward": ["ArrowRight"],
