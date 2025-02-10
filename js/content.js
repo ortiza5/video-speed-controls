@@ -1,15 +1,9 @@
 // globals
 var keysDown = new Set();
-var SETTINGS_FULL;
+var SETTINGS;
 var SPEED;
-// hotkeys
-var HOTKEY_CODES;
 var HOTKEYS_DISABLED;
-// increments
-var SPEED_INC;
-var SKIP_INC;
 // notification
-var NOTIFICATION_BACKGROUND;
 var NOTIFICATION_LAYER;
 var NOTIFICATION_POSITION;
 var NOTIFICATION_TEXT;
@@ -128,24 +122,17 @@ window.onblur = function () {
 
 function getSettings(type, callback) {
   chrome.storage.local.get(["extension-settings"], function (result) {
-    SETTINGS_FULL = result["extension-settings"];
-    if (type === "general") {
-      HOTKEY_CODES = SETTINGS_FULL.hotkeys.codes;
-      SKIP_INC = SETTINGS_FULL.increments.skip;
-      SPEED_INC = SETTINGS_FULL.increments.speed;
-      NOTIFICATION_BACKGROUND = SETTINGS_FULL.notification.background;
-      NOTIFICATION_POSITION = SETTINGS_FULL.notification.position;
-      NOTIFICATION_TEXT = SETTINGS_FULL.notification.text;
-    } else if (type === "site") {
-      SPEED = SETTINGS_FULL.speed;
-      NOTIFICATION_LAYER = SETTINGS_FULL.notification.layer;
-      HOTKEYS_DISABLED = SETTINGS_FULL.hotkeys.disables;
+    SETTINGS = result["extension-settings"];
+    if (type === "site") {
+      SPEED = SETTINGS.speed;
+      NOTIFICATION_LAYER = SETTINGS.notification.layer;
+      HOTKEYS_DISABLED = SETTINGS.hotkeys.disables;
     }
 
     if (callback instanceof Function) {
       callback();
     }
-    return SETTINGS_FULL;
+    return SETTINGS;
   });
 }
 
@@ -203,8 +190,8 @@ function setSpeed(newSpeed, video) {
 function incSpeed(video) {
   let currSpeed = video.playbackRate;
   let newSpeed;
-  if (currSpeed <= 16 - SPEED_INC) {
-    newSpeed = currSpeed + SPEED_INC;
+  if (currSpeed <= 16 - SETTINGS.increments.speed) {
+    newSpeed = currSpeed + SETTINGS.increments.speed;
   } else {
     newSpeed = 16;
   }
@@ -216,8 +203,8 @@ function incSpeed(video) {
 function decSpeed(video) {
   let currSpeed = video.playbackRate;
   let newSpeed;
-  if (currSpeed >= SPEED_INC) {
-    newSpeed = currSpeed - SPEED_INC;
+  if (currSpeed >= SETTINGS.increments.speed) {
+    newSpeed = currSpeed - SETTINGS.increments.speed;
   } else {
     newSpeed = 0;
   }
@@ -244,12 +231,12 @@ function playPause(video) {
 
 //
 function skipForward(video) {
-  video.currentTime += SKIP_INC;
+  video.currentTime += SETTINGS.increments.skip;
 }
 
 //
 function skipBackward(video) {
-  video.currentTime -= SKIP_INC;
+  video.currentTime -= SETTINGS.increments.skip;
 }
 
 // Notification to show alert
@@ -324,17 +311,17 @@ function keyPress(e) {
   }
 
   VIDEOS.forEach((video) => {
-    if (setArrayMatch(keysDown, HOTKEY_CODES["slower"]) && !HOTKEYS_DISABLED["slower"]) {
+    if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["slower"]) && !HOTKEYS_DISABLED["slower"]) {
       decSpeed(video);
-    } else if (setArrayMatch(keysDown, HOTKEY_CODES["normal"]) && !HOTKEYS_DISABLED["normal"]) {
+    } else if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["normal"]) && !HOTKEYS_DISABLED["normal"]) {
       setSpeed(1, video);
-    } else if (setArrayMatch(keysDown, HOTKEY_CODES["faster"]) && !HOTKEYS_DISABLED["faster"]) {
+    } else if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["faster"]) && !HOTKEYS_DISABLED["faster"]) {
       incSpeed(video);
-    } else if (setArrayMatch(keysDown, HOTKEY_CODES["pause"]) && !HOTKEYS_DISABLED["pause"]) {
+    } else if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["pause"]) && !HOTKEYS_DISABLED["pause"]) {
       playPause(video);
-    } else if (setArrayMatch(keysDown, HOTKEY_CODES["skip-back"]) && !HOTKEYS_DISABLED["skip-back"]) {
+    } else if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["skip-back"]) && !HOTKEYS_DISABLED["skip-back"]) {
       skipBackward(video);
-    } else if (setArrayMatch(keysDown, HOTKEY_CODES["skip-forward"]) && !HOTKEYS_DISABLED["skip-forward"]) {
+    } else if (setArrayMatch(keysDown, SETTINGS.hotkeys.codes["skip-forward"]) && !HOTKEYS_DISABLED["skip-forward"]) {
       skipForward(video);
     }
   });
