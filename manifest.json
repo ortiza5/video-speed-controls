@@ -6,7 +6,8 @@
   "permissions": ["activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "scripts": ["js/background.js"]
   },
   "content_scripts": [
     {
@@ -29,5 +30,11 @@
     "128": "img/icon-128.png",
     "48": "img/icon-48.png",
     "16": "img/icon-16.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "video-speed-controls@firefox",
+      "strict_min_version": "135.0"
+    }
   }
 }
