@@ -1,21 +1,22 @@
 // globals
-var keysDown = new Set();
-var SETTINGS;
-var SPEED;
-var HOTKEYS_DISABLED;
+let keysDown = new Set();
+let SETTINGS;
+let SPEED;
+let HOTKEYS_DISABLED;
 // notification
-var NOTIFICATION_LAYER;
-var NOTIFICATION_POSITION;
-var NOTIFICATION_TEXT;
-var IS_NOTIFICATION_LAYER_MAXED = false;
+let NOTIFICATION_LAYER;
+let NOTIFICATION_POSITION;
+let NOTIFICATION_TEXT;
+let IS_NOTIFICATION_LAYER_MAXED = false;
 // site info
-var DOMAIN = null;
-var SCRIPT_ENABLED = false;
-var OLD_VIDEOS = new Set();
-var VIDEOS = new Set();
+let DOMAIN = null;
+let SCRIPT_ENABLED = false;
+let OLD_VIDEOS = new Set();
+let VIDEOS = new Set();
+let observerTimeout;
 
 // check the page to see if it has a video, enables the pageAction
-(document.body || document.documentElement).addEventListener("transitionend", function () {
+(document.body || document.documentElement).addEventListener("transitionend", () => {
   getVideos();
   if (VIDEOS.size >= 0) {
     chrome.runtime.sendMessage({
@@ -27,19 +28,13 @@ var VIDEOS = new Set();
       OLD_VIDEOS = new Set(VIDEOS);
       getSettings("general");
 
-      getSiteSpecificSettings(function () {
+      getSiteSpecificSettings(() => {
         if (isNaN(SPEED)) {
-          getSettings("site", function () {
-            getVideos();
-            VIDEOS.forEach((video) => {
-              setSpeed(SPEED, video);
-            });
+          getSettings("site", () => {
+            applySpeedToVideos();
           });
         } else {
-          getVideos();
-          VIDEOS.forEach((video) => {
-            setSpeed(SPEED, video);
-          });
+          applySpeedToVideos();
         }
       });
     }
@@ -51,77 +46,79 @@ var VIDEOS = new Set();
 });
 
 // listen for requests from the popup
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.from === "popup" && SCRIPT_ENABLED) {
-    if (request.subject === "needInfo") {
-      getDomain();
-      sendResponse({
-        speed: SPEED,
-        domain: DOMAIN,
-        layer: NOTIFICATION_LAYER,
-        hotkeys: HOTKEYS_DISABLED,
-      });
-    } else if (request.subject === "changeSpeed") {
-      getVideos();
-      if (request.direction === "up") {
-        VIDEOS.forEach((video) => {
-          incSpeed(video);
-        });
-      } else if (request.direction === "down") {
-        VIDEOS.forEach((video) => {
-          decSpeed(video);
-        });
-      }
-      sendResponse({ speed: SPEED });
-    } else if (request.subject === "typedSpeed") {
-      let newSpeed = isNaN(parseFloat(request.newSpeed)) ? 1 : request.newSpeed;
-      getVideos();
-      VIDEOS.forEach((video) => {
-        setSpeed(newSpeed, video);
-      });
-      sendResponse({ speed: SPEED });
-    } else if (request.subject === "changeLayer") {
-      if (request.direction === "up" && !IS_NOTIFICATION_LAYER_MAXED) {
-        NOTIFICATION_LAYER++;
-      } else if (request.direction === "down") {
-        if (NOTIFICATION_LAYER >= 1) {
-          NOTIFICATION_LAYER--;
-        } else {
-          NOTIFICATION_LAYER = 0;
-        }
-        IS_NOTIFICATION_LAYER_MAXED = false;
-      }
-      // show where the new layer will be
-      getVideos();
-      VIDEOS.forEach((video) => {
-        tempAlert("This is the New Layer", 2000, video);
-      });
-      sendResponse({ layer: NOTIFICATION_LAYER });
-    } else if (request.subject === "typedLayer") {
-      let newLayer = isNaN(parseInt(request.newLayer)) ? NOTIFICATION_LAYER : request.newLayer;
-      if (newLayer >= 0) {
-        NOTIFICATION_LAYER = newLayer;
-      }
-      // show where the new layer will be
-      getVideos();
-      VIDEOS.forEach((video) => {
-        tempAlert("This is the New Layer", 2000, video);
-      });
-      sendResponse({ layer: NOTIFICATION_LAYER });
-    } else if (request.subject === "checkboxChange") {
-      HOTKEYS_DISABLED[request.id] = request.state;
-      sendResponse({ id: request.id, newState: HOTKEYS_DISABLED[request.id] });
-    }
+    handlePopupRequest(request, sendResponse);
   }
 });
 
+// Handle requests from the popup
+const handlePopupRequest = (request, sendResponse) => {
+  if (request.subject === "needInfo") {
+    getDomain();
+    sendResponse({
+      speed: SPEED,
+      domain: DOMAIN,
+      layer: NOTIFICATION_LAYER,
+      hotkeys: HOTKEYS_DISABLED,
+    });
+  } else if (request.subject === "changeSpeed") {
+    getVideos();
+    if (request.direction === "up") {
+      VIDEOS.forEach((video) => {
+        incSpeed(video);
+      });
+    } else if (request.direction === "down") {
+      VIDEOS.forEach((video) => {
+        decSpeed(video);
+      });
+    }
+    sendResponse({ speed: SPEED });
+  } else if (request.subject === "typedSpeed") {
+    const newSpeed = isNaN(parseFloat(request.newSpeed)) ? 1 : request.newSpeed;
+    getVideos();
+    VIDEOS.forEach((video) => {
+      setSpeed(newSpeed, video);
+    });
+    sendResponse({ speed: SPEED });
+  } else if (request.subject === "changeLayer") {
+    if (request.direction === "up" && !IS_NOTIFICATION_LAYER_MAXED) {
+      NOTIFICATION_LAYER++;
+    } else if (request.direction === "down") {
+      NOTIFICATION_LAYER = Math.max(0, NOTIFICATION_LAYER - 1);
+      IS_NOTIFICATION_LAYER_MAXED = false;
+    }
+    // show where the new layer will be
+    getVideos();
+    VIDEOS.forEach((video) => {
+      tempAlert("This is the New Layer", 2000, video);
+    });
+    sendResponse({ layer: NOTIFICATION_LAYER });
+  } else if (request.subject === "typedLayer") {
+    const newLayer = isNaN(parseInt(request.newLayer)) ? NOTIFICATION_LAYER : request.newLayer;
+    if (newLayer >= 0) {
+      NOTIFICATION_LAYER = newLayer;
+    }
+    // show where the new layer will be
+    getVideos();
+    VIDEOS.forEach((video) => {
+      tempAlert("This is the New Layer", 2000, video);
+    });
+    sendResponse({ layer: NOTIFICATION_LAYER });
+  } else if (request.subject === "checkboxChange") {
+    HOTKEYS_DISABLED[request.id] = request.state;
+    sendResponse({ id: request.id, newState: HOTKEYS_DISABLED[request.id] });
+  }
+};
+
 //* BUG-FIX: Changing tabs or windows using keyboard failed to clear the keys from the keysDown set
-window.onblur = function () {
+window.onblur = () => {
   keysDown.clear();
 };
 
-function getSettings(type, callback) {
-  chrome.storage.local.get(["extension-settings"], function (result) {
+// Get settings from storage
+const getSettings = (type, callback) => {
+  chrome.storage.local.get(["extension-settings"], (result) => {
     SETTINGS = result["extension-settings"];
     if (type === "site") {
       SPEED = SETTINGS.speed;
@@ -134,17 +131,17 @@ function getSettings(type, callback) {
     }
     return SETTINGS;
   });
-}
+};
 
-function getSiteSpecificSettings(callback) {
+// Get site-specific settings from storage
+const getSiteSpecificSettings = (callback) => {
   getDomain();
-  let siteSettings = {};
-  chrome.storage.local.get([DOMAIN], function (result) {
+  chrome.storage.local.get([DOMAIN], (result) => {
     try {
       if (chrome.runtime.lastError) {
         console.warn(chrome.runtime.lastError.message);
       } else {
-        siteSettings = result[DOMAIN];
+        const siteSettings = result[DOMAIN];
         HOTKEYS_DISABLED = siteSettings.disables;
         NOTIFICATION_LAYER = siteSettings.layer;
         SPEED = siteSettings.speed;
@@ -156,39 +153,47 @@ function getSiteSpecificSettings(callback) {
     if (callback instanceof Function) {
       callback();
     }
-    return siteSettings;
   });
-}
+};
 
-function getVideos() {
-  let new_videos = document.getElementsByTagName("video");
+// Get all video elements on the page
+const getVideos = () => {
+  const new_videos = document.getElementsByTagName("video");
   if (new_videos.length >= 1) {
     VIDEOS = new Set(new_videos);
-    return VIDEOS;
+  } else {
+    VIDEOS.clear();
   }
-  return new Set();
-}
+  return VIDEOS;
+};
 
-function getDomain() {
+// Get the domain of the current page
+const getDomain = () => {
   DOMAIN = window.location.origin.replace(/(^\w+:|^\w+)\/\//, "");
   return DOMAIN;
-}
+};
 
-// set video to the speed and give a notification, restricts available speeds
-function setSpeed(newSpeed, video) {
+// Set video to the speed and give a notification, restricts available speeds
+const setSpeed = (newSpeed, video) => {
   //* BUG-FIX: playback rates below 0.07 rather than 0 were causing errors
-  newSpeed = newSpeed > 16 ? 16 : newSpeed < 0.07 ? 0 : newSpeed;
+  if (newSpeed > 16) {
+    newSpeed = 16;
+  } else if (newSpeed < 0.07) {
+    newSpeed = 0;
+  }
   // limit decimal values to 2 digits, + in front truncates 2.00 -> 2
   SPEED = +newSpeed.toFixed(2);
-  video.playbackRate = SPEED;
-  tempAlert("Speed: " + SPEED, 2000, video);
-  setIcon(SPEED);
-}
+  if (video.playbackRate !== SPEED) {
+    video.playbackRate = SPEED;
+    tempAlert(`Speed: ${SPEED}`, 2000, video);
+    setIcon(SPEED);
+  }
+};
 
-// if a video exists, increment the speed by the speed increment
+// Increment the speed of the video
 // upper limit of video speed is 16 (why did they bother going so high?)
-function incSpeed(video) {
-  let currSpeed = video.playbackRate;
+const incSpeed = (video) => {
+  const currSpeed = video.playbackRate;
   let newSpeed;
   if (currSpeed <= 16 - SETTINGS.increments.speed) {
     newSpeed = currSpeed + SETTINGS.increments.speed;
@@ -196,12 +201,11 @@ function incSpeed(video) {
     newSpeed = 16;
   }
   setSpeed(newSpeed, video);
-}
+};
 
-// if a video exists, decrement the speed by the speed increment
-// lower limit of video speed is 0
-function decSpeed(video) {
-  let currSpeed = video.playbackRate;
+// Decrement the speed of the video
+const decSpeed = (video) => {
+  const currSpeed = video.playbackRate;
   let newSpeed;
   if (currSpeed >= SETTINGS.increments.speed) {
     newSpeed = currSpeed - SETTINGS.increments.speed;
@@ -209,45 +213,53 @@ function decSpeed(video) {
     newSpeed = 0;
   }
   setSpeed(newSpeed, video);
-}
+};
 
-// loads the correct icon for the speed
-function setIcon(speed) {
+// Apply speed to all videos
+const applySpeedToVideos = () => {
+  getVideos();
+  VIDEOS.forEach((video) => {
+    setSpeed(SPEED, video);
+  });
+};
+
+// Load the correct icon for the speed
+const setIcon = (speed) => {
   chrome.runtime.sendMessage({
     from: "content",
     subject: "changeIcon",
     speed: speed,
   });
-}
+};
 
-// Toggles play pause of video
-function playPause(video) {
+// Toggle play/pause of the video
+const playPause = (video) => {
   if (video.paused) {
     video.play();
   } else {
     video.pause();
   }
-}
+};
 
-//
-function skipForward(video) {
+// Skip forward in the video
+const skipForward = (video) => {
   video.currentTime += SETTINGS.increments.skip;
-}
+};
 
-//
-function skipBackward(video) {
+// Skip backward in the video
+const skipBackward = (video) => {
   video.currentTime -= SETTINGS.increments.skip;
-}
+};
 
-// Notification to show alert
-function tempAlert(msg, duration, insertAfter) {
+// Show a temporary alert
+const tempAlert = (msg, duration, insertAfter) => {
   // remove any old notification first
-  let element = document.getElementById("speed-notification123");
-  if (element !== null && element.parentNode) {
+  const element = document.getElementById("speed-notification123");
+  if (element && element.parentNode) {
     element.parentNode.removeChild(element);
   }
   // make the notification
-  let el = document.createElement("div");
+  const el = document.createElement("div");
   el.setAttribute(
     "style",
     `background: ${SETTINGS.notification.background};
@@ -267,55 +279,51 @@ function tempAlert(msg, duration, insertAfter) {
   // go up the specified number of parents
   let count = 0;
   while (count < NOTIFICATION_LAYER) {
-    // TODO: Sort of hacky to do 3 times, find a better way to check for root element
     if (insertAfter.parentNode.parentNode.parentNode) {
       insertAfter = insertAfter.parentNode;
       count++;
     } else {
       NOTIFICATION_LAYER = count;
       IS_NOTIFICATION_LAYER_MAXED = true;
-      // break out
-      count = NOTIFICATION_LAYER;
+      break;
     }
   }
   // insert the notification
   insertAfter.insertAdjacentElement("afterend", el);
 
   // fade out the notification
-  setTimeout(function () {
+  setTimeout(() => {
     el.style.opacity = 0;
   }, duration / 2);
-  setTimeout(function () {
-    if (el !== null && el.parentNode) {
+  setTimeout(() => {
+    if (el && el.parentNode) {
       el.parentNode.removeChild(el);
     }
   }, duration);
-}
+};
 
-// checking equality of set values to array values, not case sensitive
-function setArrayMatch(set1, array1) {
-  // Check if the map and array have the same number of entries
+// Check if set values match array values, not case sensitive
+const setArrayMatch = (set1, array1) => {
   if (set1.size !== array1.length) return false;
-  // Check if all items exist and are in the same order
   let i = 0;
-  for (let element of set1) {
+  for (const element of set1) {
     if (element.toLowerCase() !== array1[i].toLowerCase()) return false;
     i++;
   }
-  // Otherwise, return true
   return true;
-}
+};
 
-function areSetsEqual(a, b) {
+// Check if two sets are equal
+const areSetsEqual = (a, b) => {
   if (a.size !== b.size) return false;
-  for (let c of a) if (!b.has(c)) return false;
+  for (const c of a) if (!b.has(c)) return false;
   return true;
-}
+};
 
-// Hotkeys for different actions
-function keyPress(e) {
+// Handle key press events
+const keyPress = (e) => {
   keysDown.add(e.key.toLowerCase());
-  let target = e.target || e.srcElement;
+  const target = e.target || e.srcElement;
   if (target.tagName === "INPUT" || target.className === "comment-simplebox-text") {
     return;
   }
@@ -335,18 +343,21 @@ function keyPress(e) {
       skipForward(video);
     }
   });
-}
+};
 
-function keyRelease(e) {
+// Handle key release events
+const keyRelease = (e) => {
   keysDown.delete(e.key.toLowerCase());
-}
+};
 
-function startKeyPressListeners() {
+// Start listening for key press events
+const startKeyPressListeners = () => {
   window.addEventListener("keydown", keyPress);
   window.addEventListener("keyup", keyRelease);
-}
+};
 
-function removeKeyPressListeners() {
+// Stop listening for key press events
+const removeKeyPressListeners = () => {
   window.removeEventListener("keydown", keyPress);
   window.removeEventListener("keyup", keyRelease);
-}
+};
